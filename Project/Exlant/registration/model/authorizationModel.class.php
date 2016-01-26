@@ -82,5 +82,16 @@ class authorizationModel extends mongoDB
         return $this->_requestLevel;
     }
     
+    public function getUsersOnline()  // выбрать пользователей онлайн
+    {
+        $find = array('online' => 1);
+        $needle = array('nick');
+        $cursor = $this->getCollection()
+                          ->find($find, $needle);
+        foreach($cursor as $value){
+            $data[] = $value;
+        }
+        return $data;
+    }
 }
 

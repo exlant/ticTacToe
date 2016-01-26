@@ -100,7 +100,7 @@ class view
         $output = '';
         foreach($users as $value){
             $output .= '<div class="userItem">'
-            . '<a href="'.DOMEN.'/users/'.$value['login'].'">'.self::reduceLength($value['login'], 15).'</a>'
+            . '<a href="'.DOMEN.'/users/'.$value['nick'].'">'.self::reduceLength($value['nick'], 15).'</a>'
             . '</div>';
         }
         return $output;

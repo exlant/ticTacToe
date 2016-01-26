@@ -147,8 +147,10 @@ class ajax extends mongoDB
     // обновление пользователей онлайн
     private function updateUsersOnline()
     {
-        $cursor = $this->setCollection('usersOnline')
-                       ->find(array(), array('login'));
+        $find = array('online' => 1);
+        $needle = array('nick');
+        $cursor = $this->getCollection()
+                          ->find($find, $needle);
         foreach($cursor as $value){
             $data[] = $value;
         }

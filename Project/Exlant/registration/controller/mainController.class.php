@@ -10,31 +10,13 @@ class mainController
     const MAX_PASS = 64;            //максимальный пароль
     const C_SALT = 'okqd[jqop';     //постоянная соль
     const D_SALT = 8;               //длина символов для генерации динамической соли
-    const TIME_STORE_COOKIE = 5; //время обновления куки авторизации,  
+    const TIME_STORE_COOKIE = 3600; //время обновления куки авторизации,  
     
     public $userID = null ; // зарегистрированный пользователь/ id - пользователя
     public $userData = null;    // данные пользователя
-    private $usersOnline = null; // юзеры онлайн, удаляются при выходе, и кроном
     
     public $errorNum = 0;          //колличество ошибок
     
-    public function setUsersOnline()  // выбрать пользователей онлайн
-    {
-        $connect = new mongoDB();
-        $cursor = $connect->setCollection('usersOnline')
-                          ->find(array(), array('login'));
-        foreach($cursor as $value){
-            $data[] = $value;
-        }
-        $this->usersOnline = $data;
-        return $this;
-    }
-    
-    public function getUsersOnline()  // отдать пользователей онлайн
-    {
-        return $this->usersOnline;
-    }
-
     protected function checkLogin($login) //метод, проверки логина через регулярку
     {
         $pattern='/^(?!empty|draw)[-A-z0-9_]{'.self::MIN_LOGIN.','.self::MAX_LOGIN.'}$/';

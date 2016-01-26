@@ -12,7 +12,7 @@ $roomParams = startCore::$objects['playGame']->getRoomParam();      // пара�
 $gameArray = startCore::$objects['playGame']->getGameArray();       // игровое поле                     (array)
 $warnings = startCore::$objects['playGame']->getWarnings();
 $lastMove = startCore::$objects['playGame']->getLastMove();
-var_dump(phpinfo());
+//var_dump(phpinfo());
 ?>
 <script type="text/javascript">
     var change = <?=$roomParams['change']?>;

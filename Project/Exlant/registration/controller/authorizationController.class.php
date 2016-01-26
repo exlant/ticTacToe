@@ -8,6 +8,7 @@ class authorizationController extends mainController
     private $cookie = array();  //массив для хеша и ид из куки
     private $model = null;
     private $_accessLvl = null;  // уровень доступа
+    public $usersOnline = null; // юзеры онлайн, удаляются при выходе, и кроном
     
     function __construct()
     {
@@ -150,5 +151,15 @@ class authorizationController extends mainController
             $this->_accessLvl = (isset($_SESSION['manager']['access'])) ? $_SESSION['manager']['access'] : null;   
         }
         return $this->_accessLvl;
+    }
+    
+    public function setUsersOnline()  
+    {
+        $this->usersOnline = $this->model->getUsersOnline();
+    }
+    // отдать пользователей онлайн
+    public function getUsersOnline()  
+    {
+        return $this->usersOnline;
     }
 }

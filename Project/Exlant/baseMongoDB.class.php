@@ -16,17 +16,5 @@ class baseMongoDB extends mongoDB{
         $find = array('puth' => $path);
         return $this->setCollection('pages')
              ->findOne($find);
-    }
-    
-    public function insertPages()
-    {
-        $insert = array(
-            "index" => array(
-                "title" => "Добро пожаловать)",
-            ),
-        );
-        $this->getCollection()
-                ->insert($insert);
-    }
-    
+    }    
 }
