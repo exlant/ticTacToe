@@ -1,0 +1,139 @@
+/* 
+    Created on : 15.06.2015, 0:58:50
+    Author     : Exlant
+*/
+div.registration,
+div.authorization
+{
+    position: absolute;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: -1px 3px 66px 3px #c4c0bd;
+    width: 340px;
+    height: auto;
+    padding-bottom: 15px;
+    background: #d1e6e0;
+}
+
+div.title
+{
+    padding: 20px;
+    text-align: center;
+    font-size: 22px;
+}
+
+form input[type="text"], form input[type="password"]
+{
+    width: 300px;
+    height: 35px;
+    line-height: 26px; 
+    font-size: 18px; 
+    min-height: 26px;
+    margin-bottom: 5px;
+    text-align: center;
+    border: 1px inset grey;
+    border-radius: 5px;
+    padding: 0px;
+}
+
+div.captcha
+{
+    height: 52px;
+    //border: 1px solid black;
+    padding: 0px;
+    margin-bottom: 5px;
+}
+div.captcha img
+{
+    width: 300px;
+    height: 50px;
+    border-radius: 5px;
+    border: 1px outset grey;
+    margin: 0px;
+}
+
+form div.inputForm input:hover
+{
+    border: 1px solid #8c9cf3 ;
+}
+form div.inputForm input:focus
+{
+    outline-color: green;
+}
+
+form input[type="password"]::-webkit-input-placeholder       {line-height: 26px;  transition: line-height 0.5s ease;}
+form input[type="password"]::-moz-placeholder                {line-height: 26px;  transition: line-height 0.5s ease;}
+form input[type="password"]:-moz-placeholder                 {line-height: 26px;  transition: line-height 0.5s ease;}
+form input[type="password"]:-ms-input-placeholder            {line-height: 26px;  transition: line-height 0.5s ease;}
+form input[type="password"]:focus::-webkit-input-placeholder {line-height: 100px; transition: line-height 0.5s ease;}
+form input[type="password"]:focus::-moz-placeholder          {line-height: 100px; transition: line-height 0.5s ease;}
+form input[type="password"]:focus:-moz-placeholder           {line-height: 100px; transition: line-height 0.5s ease;}
+form input[type="password"]:focus:-ms-input-placeholder      {line-height: 100px; transition: line-height 0.5s ease;}
+
+form input[type="text"]::-webkit-input-placeholder       {line-height: 26px;  transition: line-height 0.5s ease;}
+form input[type="text"]::-moz-placeholder                {line-height: 26px;  transition: line-height 0.5s ease;}
+form input[type="text"]:-moz-placeholder                 {line-height: 26px;  transition: line-height 0.5s ease;}
+form input[type="text"]:-ms-input-placeholder            {line-height: 26px;  transition: line-height 0.5s ease;}
+form input[type="text"]:focus::-webkit-input-placeholder {line-height: 100px; transition: line-height 0.5s ease;}
+form input[type="text"]:focus::-moz-placeholder          {line-height: 100px; transition: line-height 0.5s ease;}
+form input[type="text"]:focus:-moz-placeholder           {line-height: 100px; transition: line-height 0.5s ease;}
+form input[type="text"]:focus:-ms-input-placeholder      {line-height: 100px; transition: line-height 0.5s ease;}
+
+form input[type="submit"], input[type="button"]
+{
+    line-height: 32px; 
+    font-size: 18px; 
+    min-height: 32px;
+    width: 302px;
+    height: 37px;
+    margin-top: 10px;
+    background-color: white;
+    border: 1px outset grey;
+    border-radius: 5px;
+    padding: 0px;
+    
+}
+
+form input[type="submit"]:hover,
+input[type="button"]:hover
+{
+    background-color: #dbd9d4;
+    cursor: pointer;
+    
+}
+
+form input[type="submit"]:active,
+input[type="button"]:active
+{
+    background-color: #dbd9d4;
+    cursor: pointer;
+    border: 1px inset grey;
+}
+
+div.helper
+{
+    display: none;
+    padding: 5px 20px;
+    color: red;
+    font-size: 16px;
+}
+
+div.errorHelper
+{
+    padding: 5px 20px;
+    color: red;
+    font-size: 16px;
+}
+
+div.registration div.quickMessage
+{
+    margin-top: 10px;
+    padding: 0px 20px;
+    color: green;
+    font-size: 18px;
+}
+
+a
+{
+    text-decoration: none;
+}

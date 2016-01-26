@@ -1,0 +1,131 @@
+/* 
+    Created on : 14.06.2015, 10:53:07
+    Author     : exlant
+*/
+
+/* начало стилей для блока добавления игроков*/
+
+div.roomAddPlayers 
+{ 
+    border: 1px solid black;
+    border-bottom: none;
+    width: 888px;
+    text-align: left;
+}
+
+div.roomAddPlayers .title
+{
+    text-align: center;
+    padding: 5px;
+    font-size: 20px;
+    border-bottom: 1px solid black;
+    background: #d1e6e0;
+}
+
+.roomAddPlayers .roomParam,
+.roomAddPlayers .playersContainer,
+.roomAddPlayers .player
+{
+    display: inline-block;  
+}
+.roomAddPlayers .roomParam
+{
+    width: 180px;
+    padding: 5px 0px;    
+}
+
+.roomParam > div
+{
+    border-bottom: 1px solid black;
+}
+
+.roomParam > :last-child{
+    border-bottom: none;
+}
+
+.roomAddPlayers .settingValue,
+.roomAddPlayers .settingName
+{
+    display: inline-block;
+    padding: 5px;
+    text-align: right;
+    font-size: 16px;
+}
+
+.roomAddPlayers .settingName
+{
+    width: 120px;
+}
+
+.roomAddPlayers .settingValue
+{
+    font-weight: bold;
+    width: 20px;
+}
+
+.roomAddPlayers .playersContainer
+{
+    vertical-align: top;
+    width: 700px;
+    height: 212px;
+    padding: 5px 0px;
+    border-left: 1px solid black;
+    
+}
+
+.roomAddPlayers .playersContainer .player
+{
+    vertical-align: top;
+    border-radius: 5px;
+    margin-left: 5px;
+    border: 1px solid black;
+    width: 167px;
+    height: 100%;
+}
+
+.roomAddPlayers .playersContainer .player .name
+{
+    border-bottom: 1px solid black;
+    border-radius: 5px 5px 0px 0px;
+    background: #d1e6e0;
+    text-align: center;
+    font-weight: bold;
+    padding: 4px;
+    font-size: 16px;
+    margin-bottom: 50px;
+}
+
+.roomAddPlayers .playersContainer .player .figure
+{
+    padding: 4px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.roomAddPlayers .playersContainer .player .figure > div:last-child
+{
+    margin-top: 5px;
+    padding: 4px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.roomAddPlayers .playersContainer .player .dropPlayerUrl
+{
+    text-align: center;
+}
+
+.roomAddPlayers select 
+{
+    width: 100px;
+}
+
+.roomAddPlayers input[type="submit"] 
+{
+    margin-top: 5px;
+    width: 100px;
+}
+
+
+
+

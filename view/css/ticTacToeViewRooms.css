@@ -1,0 +1,63 @@
+table.viewRoom
+{
+    border: 1px solid black;
+    width: 890px;
+    border-collapse: collapse;
+}
+
+tr:nth-child(odd)
+{
+    background-color: whitesmoke;
+}
+
+tr:hover:not(.notRoom)
+{
+    background: #b0c3dd;
+    cursor: pointer;
+}
+
+table tr.notRoom td
+{
+    height: 30px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+th
+{
+    background-color: #d1e6e0;
+    border: 1px solid black;
+    padding: 10px;
+    cursor: default;
+}
+
+td
+{
+    border: 1px solid black;
+    text-align: center;
+    padding: 5px;
+}
+
+div.addRoom input[type="button"]
+{
+    border-radius: 0px 0px 5px 5px;
+    border: 1px solid black;
+    border-top: none;
+    background-color: #b0c3dd;
+    cursor: pointer;
+    width: 890px;
+    padding: 6px;
+    text-align: center;
+    font-size: 19px;
+}
+
+div.addRoom input[type="button"]:hover
+{
+    background-color: #8C9ED4;
+    color: white;
+}
+
+div.addRoom a
+{
+    text-decoration: none;
+}

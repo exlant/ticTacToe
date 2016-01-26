@@ -1,0 +1,197 @@
+
+div.centerContainer div.wrapper
+{
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+}
+
+div.field,
+div.users
+{
+    display: inline-block;
+    vertical-align: top;
+}
+
+div.field
+{
+    width: 600px;
+    border: 1px solid black;
+    border-bottom: none;
+    min-height: 640px;
+    //padding-bottom: 20px;
+}
+
+div.users
+{
+    border-top: 1px solid black;
+    
+    width: 287px;
+    height: 100%;
+}
+
+div.field div.title,
+div.users div.title
+{
+    padding: 5px;
+    margin: 0px;
+    font-size: 20px;
+    background: #d1e6e0;
+    text-align: center;
+    
+}
+
+div.field div.title
+{
+    border-bottom: 1px solid black;
+    
+}
+
+div.roomParameters div.title
+{
+    border-bottom: 1px solid black;
+}
+
+div.users div.players div.title
+{
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+div.users div.viewers div.title
+{
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    
+}
+
+div.players ul
+{
+    padding-left: 20px;
+}
+
+div.players li
+{
+    margin-top: 10px;
+}
+
+div.players li.player
+{
+    
+    list-style-type: none;
+}
+div.players li.moving
+{
+    list-style-type:circle;
+}
+
+
+
+/* поле для игры начало*/
+
+table.type2d
+{
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table.type2d td
+{
+    border: 1px solid black;
+    width: 25px;
+    height: 25px;
+    padding: 0px;
+    margin: 0px;
+}
+
+table.type2d td.coordination
+{
+    border: none;
+    text-align: center;
+    font-size: 16px;
+    vertical-align: bottom;
+    width: 25px;
+    height: 25px;
+    padding: 0px;
+    margin: 0px;
+}
+
+table td img.fieldFigure,
+table td img.fieldEmtyMove,
+table td img.fieldEmty
+{
+    width: 23px;
+    height: 23px;
+    padding: 0px;
+    margin: 0px;
+}
+
+div.players img.fieldFigure
+{
+    vertical-align: bottom;
+    width: 15px;
+    height: 15px;
+    padding: 0px;
+    margin: 0px;
+}
+
+div.gameArea
+{
+    text-align: center;
+}
+
+div.gameArea div.title
+{
+    
+    padding: 5px;
+    margin: 0px;
+    font-size: 20px;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    background: #d1e6e0;
+}
+
+div.type2d div.gameSideX
+{
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+    margin: 5px;
+}
+
+div.type2d div.winnerCell
+{
+    background: green;
+}
+
+div.centerContainer div.wrapper div.field div.fieldButton
+{
+    margin: 0px;
+    padding: 0px;
+    border-bottom: 1px solid black;
+    text-align: center;
+}
+
+div.centerContainer div.wrapper div.field div.fieldButton div
+{
+    width: 149px;
+    padding: 8px 0px;
+    height: 17px;
+    margin: 0px;
+    border-left: 1px solid black;
+    display: inline-block;
+    background-color: #d1e6e0;
+    cursor: pointer;
+}
+
+div.centerContainer div.wrapper div.field div.fieldButton div:first-child
+{
+    width: 150px;
+    border-left: none;
+}
+
+div.centerContainer div.wrapper div.field div.fieldButton div:hover
+{
+    background-color: #b0c3dd;
+    color: white;
+}

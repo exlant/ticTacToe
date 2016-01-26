@@ -1,0 +1,42 @@
+<Files *.php>
+        Require all denied
+</Files>
+<Files ~ "^index|ajax|captcha.php$">
+        Require all granted
+</Files>
+
+
+AddDefaultCharset Off
+<IfModule dir_module>
+    DirectoryIndex index.php
+</IfModule>
+
+RewriteEngine On 
+  
+RewriteCond %{SCRIPT_FILENAME} !-d  
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !favicon\.ico
+RewriteRule ^(tictactoe)/(.+?)/(.+?)/?$ ./index.php?route=$1&action=$2&property=$3 
+
+RewriteCond %{SCRIPT_FILENAME} !-d  
+RewriteCond %{SCRIPT_FILENAME} !-f 
+RewriteCond %{REQUEST_URI} !favicon\.ico
+RewriteRule ^(tictactoe)/(.+?)/?$ ./index.php?route=$1&action=$2
+
+RewriteCond %{SCRIPT_FILENAME} !-d  
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !favicon\.ico
+RewriteRule ^(.+?)/(.+?)/(.+?)/?$ ./index.php?route=$1&action=$2&property=$3
+
+RewriteCond %{SCRIPT_FILENAME} !-d  
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !favicon\.ico
+RewriteRule ^(.+?)/(.+?)/?$ ./index.php?route=$1&action=$2
+
+RewriteCond %{SCRIPT_FILENAME} !-d  
+RewriteCond %{SCRIPT_FILENAME} !-f 
+RewriteCond %{REQUEST_URI} !favicon\.ico
+RewriteRule ^(.+?)/?$  ./index.php?route=$1
+
+
+

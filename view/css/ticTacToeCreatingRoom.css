@@ -1,0 +1,146 @@
+/* 
+    Created on : 12.06.2015, 4:46:23
+    Author     : exlant
+*/
+
+
+/* начало стилей для формы создания комнаты*/
+div.roomSettings
+{ 
+    border: 1px solid black;
+    border-bottom: none;
+    width: 888px;
+    text-align: left;
+}
+
+div.roomSettings .title
+{
+    text-align: center;
+    padding: 5px;
+    font-size: 20px;
+    border-bottom: 1px solid black;
+    background: #d1e6e0;
+}
+
+form div.creatingForm
+{
+    padding-top: 15px;
+    margin-left: 140px;
+    //margin-bottom: 20px;
+    border: 1px solid black;
+    border-bottom: none;
+    border-top: none;
+    width: 600px;
+}
+
+form div.formFild{
+    margin-left: 10px;
+    height: 40px;
+    //border: 1px solid black;
+}
+
+form div.inputName 
+{ 
+    display: inline-block;
+    text-align: right;
+    font-size: 16px;
+    font-weight: bold;
+    width: 200px;
+}
+form div.inputForm 
+{ 
+    display: inline-block;
+    width: 150px;
+    
+}
+form div.help
+{
+    display: inline-block;
+    margin-left: 10px;
+    text-align: left;
+    font-size: 14px;
+    color: gray;
+}
+
+form input[type="number"]
+{ 
+    width: 150px;
+    text-align: center;
+    line-height: 25px; 
+    font-size: 18px; 
+    min-height: 25px; 
+}
+form select 
+{ 
+    
+    width: 154px;
+    padding-top: 4px;
+    padding-bottom: 4px; 
+    text-align: right;
+    font-size: 18px;
+    
+}
+form select[name="gameType"] {text-align: left; padding-left: 55px;}
+form select[name="figure"] {text-align: left; padding-left: 35px;}
+
+form input[type='checkbox']
+{
+    vertical-align: bottom;
+    padding: 0px;
+    margin: 0px;
+    width: 25px;
+    height: 25px;
+}
+
+#points
+{
+    display: none;
+}
+
+form div.submit
+{
+    width: 100%;
+    text-align: left;
+    padding-left: 140px;
+}
+
+form div.submit a
+{
+    text-decoration: none;
+}
+
+form input[type="submit"] 
+{ 
+    margin-bottom: 20px;
+    border-radius: 0px 0px 0px 5px;
+    border: 1px solid black;
+    background-color: #b0c3dd;
+    cursor: pointer;
+    width: 301px;
+    padding: 6px;
+    text-align: center;
+    font-size: 19px;
+    color: black;
+}
+
+form input[type="button"] 
+{ 
+    margin-bottom: 20px;
+    border-radius: 0px 0px 5px 0px;
+    border: 1px solid black;
+    border-left: none;
+    background-color: #b0c3dd;
+    cursor: pointer;
+    width: 301px;
+    padding: 6px;
+    text-align: center;
+    font-size: 19px;
+    color: black;
+}
+
+form input[type="submit"]:hover,form input[type="button"]:hover
+{
+    background-color: #8C9ED4;
+    color: white;
+}
+/* начало стилей для формы создания комнаты*/
