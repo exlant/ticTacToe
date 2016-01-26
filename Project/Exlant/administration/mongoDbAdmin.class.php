@@ -13,8 +13,6 @@ class mongoDbAdmin
         $this->mongoDb();      
     }
     
-    private function __clone() {}
-    
     static function getInstance()
     {
         if(self::$_instance === null){

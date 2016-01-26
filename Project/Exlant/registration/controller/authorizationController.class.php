@@ -17,7 +17,7 @@ class authorizationController extends mainController
         );
         $this->model = new authorizationModel(); 
         
-        $this->setCookie($cookie) //записуем куку    
+        $this->setCookie($cookie)     
              ->getAuthorization(); //запускаем проверку хеша и ид из базы с хешом и ид из куки
                                    // при успехе авторизируем пользователя
     }
@@ -53,10 +53,12 @@ class authorizationController extends mainController
         if($this->model->getRequestLvl()==='manager'){
             $this->setAccessLvl();
         }
+        $this->model->setFind('_id', new \MongoId($user['_id']->$id));
         $this->setHash($user['_id']->$id);
         if(isset($_SESSION['triesAuth'])){
             unset($_SESSION['triesAuth']);
         }
+        $this->model->updateDB();
         header('location:'.DOMEN); //переадресация 
         exit();     //остановка скрипта
     }
@@ -79,44 +81,60 @@ class authorizationController extends mainController
             //если id и хеш найдены в базе, то авторизируем пользователя
             $user = $this->model->getUserById($this->getCookie()['id'], $this->getCookie()['hash']);
             if($user){
-                //создаем новый хеш для идентификации пользователя, если хеш не записан в базу ошибка!
-                $this->setHash($this->getCookie()['id']);
+                 $this->model->setFind('_id', new \MongoId($this->getCookie()['id']));
+                if($this->checkCookieTimeUpdate($user['cookieTime'])){
+                    //создаем новый хеш для идентификации пользователя
+                    $this->setHash($this->getCookie()['id']);
+                }
+                
                 $id = '$id';
                 $this->userID = $user['_id']->$id; // записуем mongoId пользователя
                 $this->userData = $user; //данные пользователя
                 //добавляем пользователя в список онлайн
                 if($this->getAccessLvl() !== 'manager'){
-                    $this->model->addUserToListOnline($user['nick'], $user['_id']->$id, time());
+                    $this->model->addUserToListOnline();
                 }
+                $this->model->updateDB();
                 return TRUE;
             }
         }
         return FALSE;
     }
     
-    private function setHash($userId){ //создаем хеш для идентификации пользователя
+    private function checkCookieTimeUpdate($time)
+    {
+        if($time + parent::TIME_STORE_COOKIE < time()){
+            return TRUE;
+        }
+        return FALSE;
+    }
+    
+    private function setHash($userId)
+    { //создаем хеш для идентификации пользователя
         
         $hash = $this->generateString(); // генерируем хеш
         //записуем хеш в куки
         setcookie('hash', $hash, time()+3600*24*30,'/'); 
         setcookie('string', $userId, time()+3600*24*30,'/');
         //записуем хеш в базу данных
-        $this->model->setHash($userId, $hash);
+        $this->model->setHash($hash);
+        return $this;
     } 
-    public function out($userId){
+    public function out($userId)
+    {
         // удаляем куки с ид и хешем
         setcookie('hash','',0,'/');
         setcookie('string','',0,'/');
-        
-        $authorizationModel = new authorizationModel(); // экземпляр модели
+        $this->model->setFind('_id', new \MongoId($userId));
         //удаляем хеш из базы
-        $authorizationModel->setHash($userId, '');
+        $this->model->setHash();
         if($this->getAccessLvl() === 'manager'){
             unset($_SESSION['manager']);
         }else{
             //удаляем из списка онлайн
-            $authorizationModel->dropUserToListOnline($userId);
+            $this->model->dropUserFromListOnline();
         }
+        $this->model->updateDB();
         header('location:'.DOMEN); //переадресация 
         exit();
     }

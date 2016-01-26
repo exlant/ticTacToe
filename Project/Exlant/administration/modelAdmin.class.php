@@ -31,7 +31,6 @@ class modelAdmin
     
     public function getPages($page = null)
     {
-        //$find = array('')
         return $this->getDb()->find('pages',$page);
     }
     

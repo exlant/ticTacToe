@@ -9,6 +9,8 @@ class mongoDB
     static public $queries = array();
     static public $countQueries = 0;
 
+    protected $_find = array();    // стэк для поиска
+    protected $_update = array();   // стэк для изменений, которые буду потом записаны в бд
     private $collection = null; //коллекция(таблица);
     private $collectionName = null; // имя коллекции
     
@@ -80,6 +82,17 @@ class mongoDB
         return $this->collection->update($find, $update);
     }
     
+    public function updateDB()  //обновляет базу
+    {
+        if($this->getFind() and $this->getUpdate()){
+            $this->getCollection()
+                 ->update($this->getFind(), $this->getUpdate());
+        }
+        $this->_update = array();
+        $this->_find = array();
+        return $this;
+    }
+    
     public function insert($insert)
     {
         $push = array(
@@ -105,6 +118,31 @@ class mongoDB
     public function getCollection()
     {
         self::$countQueries++;
+        return $this;
+    }
+    
+    public function getUpdate()
+    {
+        return $this->_update;
+    }
+    
+    public function setUpdate($key, $type, $value)
+    {
+        $array = $this->getUpdate();
+        if(!isset($array[$type][$key])){
+            $this->_update[$type][$key] = $value;
+        }
+        return $this;
+    }
+    
+    public function getFind()
+    {
+        return $this->_find;
+    }
+    
+    public function setFind($key, $value)
+    {
+        $this->_find[$key] = $value;
         return $this;
     }
     

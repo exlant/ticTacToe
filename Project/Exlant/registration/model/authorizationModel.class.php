@@ -29,12 +29,11 @@ class authorizationModel extends mongoDB
              ->findOne($user,array('pass','salt'));
     }
     
-    public function setHash($id,$hash) //записуем уникальный хеш пользователя для идентификации через cookie
+    public function setHash($hash = '') //записуем уникальный хеш пользователя для идентификации через cookie
     {
-        $userFound = array('_id' => new \MongoId($id)); // массив для поиска
-        $userUpdate = array('$set' => array('hash' => $hash)); // массив для обновления хеша в базе 
-        $this->getCollection()        // обновляем хеш в базе
-             ->update($userFound,$userUpdate);
+        $this->setUpdate('hash', '$set', $hash)
+             ->setUpdate('cookieTime', '$set', time());
+        return $this;
     }
     
     public function getUserById($id,$hash) //достаем данные пользователя по id и хешу
@@ -44,38 +43,26 @@ class authorizationModel extends mongoDB
             'hash' => $hash,
             'visibility' => 1,
             );
-        $needle = array('nick','mail','date', 'statistics');
+        $needle = array('nick','mail','date', 'statistics', 'online', 'timeOnline', 'cookieTime');
         if($this->getRequestLvl()==='manager'){
-            $needle = array('nick');
+            $needle = array('nick', 'cookieTime');
         }
         return $this->getCollection()
-                    ->findOne($find);
+                    ->findOne($find,$needle);
     }
     
-    public function addUserToListOnline($login,$id,$time) //добавляем пользователя в список online
-    {                                                     //если пользователь уже онлайн обновляем время
-        $this->setCollection('usersOnline');
-        $find = array('login' => $login);
-        if($this->getCollection()->findOne($find)){
-            $update = array('$set' => array('time' => $time));
-            $this->getCollection()->update($find,$update);
-            return TRUE;
-        }
-        $user = array(
-            'login' => $login,
-            'id' => $id,
-            'time' => $time,
-        );
-        
-        $this->getCollection()
-             ->insert($user);
+    public function addUserToListOnline() //добавляем пользователя в список online
+    {             
+        $this->setUpdate('online', '$set', 1)
+             ->setUpdate('timeOnline', '$set', time());
+        return $this;
     }
     
-    public function dropUserToListOnline($userId)
+    public function dropUserFromListOnline()
     {
-        
-        $this->setCollection('usersOnline')
-             ->remove(array('id' => $userId));
+        $this->setUpdate('online', '$set', 0)
+             ->setUpdate('timeOnline', '$set', 0);
+        return $this;
     }
     
     protected function setRequestLvl()

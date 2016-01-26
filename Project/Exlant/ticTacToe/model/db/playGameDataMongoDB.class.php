@@ -8,8 +8,6 @@ class playGameDataMongoDB extends mongoDB
     
     private $creater = null;     //создатель комнаты(по нему происходит идентификация)  (string) // __construct
     private $login = null;       //логин игрока                                         (string) // __construct
-    private $_find = array();    // стэк для поиска
-    private $_update = array();   // стэк для изменений, которые буду потом записаны в бд
     
     public function __construct($creater,$login) {
         parent::__construct();
@@ -106,12 +104,6 @@ class playGameDataMongoDB extends mongoDB
              ->setUpdate('timeEnd', '$set', time())
              ->setUpdate('winner', '$set', $winner);
         return $this;
-    }
-    
-    public function updateDB()  //обновляет комнату в базе после хода игрока
-    {
-        $this->getCollection()
-             ->update($this->getFind(), $this->getUpdate());
     }
     
     public function changePlayerStatus($movingPlayer)
@@ -213,30 +205,5 @@ class playGameDataMongoDB extends mongoDB
         $needle = array('query');
         return $this->getCollection()
                     ->findOne($find, $needle);
-    }
-    
-    public function getUpdate()
-    {
-        return $this->_update;
-    }
-    
-    private function setUpdate($key, $type, $value)
-    {
-        $array = $this->getUpdate();
-        if(!isset($array[$type][$key])){
-            $this->_update[$type][$key] = $value;
-        }
-        return $this;
-    }
-    
-    public function getFind()
-    {
-        return $this->_find;
-    }
-    
-    private function setFind($key, $value)
-    {
-        $this->_find[$key] = $value;
-        return $this;
     }
 }

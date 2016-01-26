@@ -17,7 +17,7 @@ use Project\Exlant\view\view;
     <body>
 <?php
     $errorHandler->setGlobalVariables();
-    //echo $errorHandler->getGlobalVariables(); without index
+    //echo $errorHandler->getGlobalVariables();
       
     if(startCore::$authorization->userID 
             and startCore::$authorization->getAccessLvl() !== 'manager'){
