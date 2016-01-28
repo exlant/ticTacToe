@@ -26,17 +26,10 @@ class playGameDataMongoDB extends mongoDB
         return $this->login;
     }   
         
-    public function quitGame()                          // меняем поле(exit) игрока с no на yes
+    public function playerExit()        // меняем поле(exit) игрока с no на yes
     {
-        $find = array(
-            'creater' => $this->getCreater(),
-            'status' => array('$in' => array('start', 'end')),
-            'players.'.$this->getLogin().'.exit' => 'no'
-            
-        );
-        $update = array('$set' => array('players.'.$this->getLogin().'.exit' => 'yes'));
-        $this->getCollection()
-             ->update($find,$update);
+        $this->setUpdate('players.'.$this->getLogin().'.exit', '$set', 'yes');
+        return $this;
     }
     
     public function setUpdateCurentPlayer($players, $player, $time)
@@ -56,10 +49,10 @@ class playGameDataMongoDB extends mongoDB
         $this->_update['$set']['players'][$nextNick]['timeShtamp'] = $time;
         return $this;
     }
-    
-    public function setUpdateRoomAfterMove($key, $move)
+    // запись хода игрока
+    public function setUpdateRoomAfterMove($key, $move, $figure)
     {
-        $this->setUpdate($key, '$set', $this->getLogin())
+        $this->setUpdate($key, '$set', $figure)
              ->setUpdate('movies', '$push', array(
                 'login' => $this->getLogin(),
                 'move' => $move)
@@ -76,12 +69,19 @@ class playGameDataMongoDB extends mongoDB
     //
     public function setMoveBack($queries, $gameArrayPuth)
     {
-        $this->setQuery($queries, 'confirm', 0) // выставляет и параметры поиска
+        $this->setQuery($queries, 0)
              ->setUpdate('warnings', '$pop', 1)
              ->setUpdate('movies', '$pop', 1)
              ->setUpdate($gameArrayPuth, '$set', 'empty')
              ->setUpdate('change', '$inc', 1)
             ;
+    }
+    // выставляет стандартныйе параметры поиска играющей комнаты
+    public function setStandartFindStartGame()
+    {
+        $this->setFind('creater', $this->getCreater())
+             ->setFind('status', 'start');
+        return $this;
     }
     
     public function setUpdatePoints($points, $winnerRow)
@@ -89,6 +89,12 @@ class playGameDataMongoDB extends mongoDB
         $this->_update['$set']['players'][$this->getLogin()]['points'] += $points;
         $this->setUpdate('winnerRow', '$push', $winnerRow);
         
+        return $this;
+    }
+    
+    public function setUpdateWinnerRowMoveBack($value)
+    {
+        $this->setUpdate('winnerRow', '$pull', $value);
         return $this;
     }
     
@@ -105,16 +111,25 @@ class playGameDataMongoDB extends mongoDB
              ->setUpdate('winner', '$set', $winner);
         return $this;
     }
-    
-    public function changePlayerStatus($movingPlayer)
+    // меняет статус пользователяв  комнате на view / play
+    public function changePlayerStatus($login, $status)
     {
-        $find = array(
-            'creater' => $this->getCreater(),
-            'status' => 'start',
-        );
-        $update = array('$set' => array('players.'.$movingPlayer.'.status' => 'view'));   // переводм игрока в режим посмотра в коллекции room
-        $this->getCollection()
-             ->update($find,$update);
+        $this->setUpdate('players.'.$login.'.status', '$set', $status);
+        return $this;
+    }
+    // устанавливае свободное место, с параметрами вышедшего игрока
+    public function setFreePlace($freePlace)
+    {
+        $this->setUpdate('freePlace', '$push', $freePlace);
+        return $this;
+    }
+    // параметры поиска для выхода игрока из комнаты, или перевод его в зрители
+    public function setFindForOutPlayer()
+    {
+        $this->setFind('creater', $this->getCreater())
+             ->setFind('status', array('$in' => array('start', 'end')))
+             ->setFind('players.'.$this->getLogin().'.exit', 'no');
+        return $this;
     }
 
     private function getGameResult($type)
@@ -146,10 +161,9 @@ class playGameDataMongoDB extends mongoDB
         $this->setCollection(self::collection);
     }
     
-    public function setWarnings($warning, $countMovies)
+    public function setWarnings($warning)
     {
-        $num =  $countMovies - 1;
-        $this->setUpdate('warnings.'.$num, '$set', $warning);
+        $this->setUpdate('warnings', '$push', $warning);
         
         return $this;
     }
@@ -166,14 +180,12 @@ class playGameDataMongoDB extends mongoDB
     
     public function updateQuery($query)
     {
-        $this->setUpdate('queries.'.$query.'.'.$this->getLogin(), '$set', 1)
-             ->setFind('creater', $this->getCreater())
-             ->setFind('status', 'start');
+        $this->setUpdate('queries.'.$query.'.'.$this->getLogin(), '$set', 1);
         
         return $this;
     }
     
-    public function setQuery($queries, $query, $value)
+    public function setQuery($queries, $value, $query = '')
     {
         $newQueries = array();
         foreach ($queries as $q => $players){
@@ -185,25 +197,8 @@ class playGameDataMongoDB extends mongoDB
                 }
             }
         }       
-        $this->setUpdate('queries', '$set', $newQueries)
-             ->setFind('creater', $this->getCreater())
-             ->setFind('status', 'start');
+        $this->setUpdate('queries', '$set', $newQueries);
+             
         return $this;
-    }
-    
-    public function addPlusQuery()
-    {
-        
-    }
-    
-    public function getQuery()
-    {
-        $find = array(
-            'creater' => $this->getCreater(),
-            'status' => 'start'
-        );
-        $needle = array('query');
-        return $this->getCollection()
-                    ->findOne($find, $needle);
     }
 }

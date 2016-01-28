@@ -7,6 +7,7 @@ if($userBusyInfo['roomStatus'] == 'creating'){
         <div class="title">Вы создаете комнату для игры в крестики-нолики</div>
         <form action="<?= DOMEN.'/'.TICTACTOE ?>" method="post">
             <div class="creatingForm">
+            <!--
             <div class="formFild">
                 <div class="inputName">
                     Тип игры: 
@@ -17,10 +18,12 @@ if($userBusyInfo['roomStatus'] == 'creating'){
                         <option value="3d">3D</option>
                     </select>
                 </div>
+                
                 <div class="help">
                     3D - игра в кубе 
                 </div>    
             </div>
+            -->
             <div class="formFild">
                 <div class="inputName">
                     Длина поля: 
@@ -59,10 +62,10 @@ if($userBusyInfo['roomStatus'] == 'creating'){
                     Очи: 
                 </div>
                 <div class="inputForm">
-                    <input type="number" min="3" max="50" value="3" name="pointsNum">
+                    <input type="number" min="3" max="20" value="3" name="pointsNum">
                 </div>
                 <div class="help">
-                    от 3 до 50
+                    от 3 до 20
                 </div> 
             </div>
             <div class="formFild">

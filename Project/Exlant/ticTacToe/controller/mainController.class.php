@@ -63,7 +63,6 @@ class mainController extends mainModel
             if(filter_input(INPUT_POST, 'type') === 'createRoom' 
                     and $this->getUserBusyInfo()['roomStatus'] === 'creating'){
                 $this->createRoom($login,
-                        filter_input(INPUT_POST, 'gameType'),
                         filter_input(INPUT_POST, 'fildLength'),
                         filter_input(INPUT_POST, 'figure'),
                         filter_input(INPUT_POST, 'players'),
@@ -109,10 +108,9 @@ class mainController extends mainModel
         $this->redirectToPage();
     }
     
-    protected function createRoom($login,$gameType,$fildLength,$figure,$numberPlayers,$roundTime, $figureInArow, $points, $pointsNum, $blitz)
+    protected function createRoom($login,$fildLength,$figure,$numberPlayers,$roundTime, $figureInArow, $points, $pointsNum, $blitz)
     {
-        if(!in_array($gameType, $this->gameType) 
-                or $fildLength < $this->fildLength['min'] or $fildLength > $this->fildLength['max']
+        if($fildLength < $this->fildLength['min'] or $fildLength > $this->fildLength['max']
                 or !isset($this->figure)
                 or $figureInArow < $this->figureInArow['min'] or $figureInArow > $this->figureInArow['max']
                 or $pointsNum < $this->pointsNum['min'] or $pointsNum > $this->pointsNum['max']
@@ -120,7 +118,7 @@ class mainController extends mainModel
                 or $roundTime < $this->roundTime['min'] or $roundTime > $this->roundTime['max']){
             $this->redirectToPage();
         }
-        parent::createRoom($login,$gameType,$fildLength,$figure,$numberPlayers,$roundTime, $figureInArow, $points, $pointsNum, $blitz);
+        parent::createRoom($login,$fildLength,$figure,$numberPlayers,$roundTime, $figureInArow, $points, $pointsNum, $blitz);
         $this->redirectToPage();
     }
     
@@ -189,7 +187,6 @@ class mainController extends mainModel
     {
         $data = array();
         $data['roomSettings'] = array(
-            'type' => 'Поле',
             'sideLength' => 'Длина стороны',
             'figureInArow' => 'Фигур в ряд',
             'pointsText' => 'Игра на очи',

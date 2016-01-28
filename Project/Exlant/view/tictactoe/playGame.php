@@ -24,9 +24,9 @@ $lastMove = startCore::$objects['playGame']->getLastMove();
             <div id="moveBack">Ход назад</div><!--
             --><div id="draw">Предложить ничью</div><!--
             --><div id="surrender">Сдаться</div><!--
-            --><div id>Выйти</div>
+            --><div id="outGame">Выйти</div>
         </div>
-        <?= view::field2d($login, $gameArray, $lastMove, $movingPlayer, $roomParams['busyFigure'], $warnings, $winnerSide)?>
+        <?= view::field2d($login, $gameArray, $lastMove, $movingPlayer, $warnings, $winnerSide)?>
     </div><!--
  --><div class="users">
         <div class="roomParameters">
@@ -45,7 +45,7 @@ $lastMove = startCore::$objects['playGame']->getLastMove();
                 <li>Победитель - <?= ($winner) ? $winner : '' ?>
             </ul>    
         </div>
-        <?= view::viewRoomsUsers($players, $viewers, $login) ?>
+        <?= view::viewRoomsUsers($players, $viewers, $roomParams['points']) ?>
     </div><!-- 
  -->
     <?php

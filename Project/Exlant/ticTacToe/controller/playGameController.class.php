@@ -2,7 +2,6 @@
 namespace Project\Exlant\ticTacToe\controller;
 
 use Project\Exlant\ticTacToe\model\playGameModel;
-use Project\Exlant\ticTacToe\controller\ticTacToeFoursquare;
 use Project\Exlant\ticTacToe\model\db\playGameDataMongoDB;
 
 class playGameController extends playGameModel
@@ -10,13 +9,14 @@ class playGameController extends playGameModel
     public function __construct($login, $roomParam) 
     {
         parent::__construct(new playGameDataMongoDB($roomParam['creater'], $login), $roomParam);
-        $this->systemProcess();               // методы без взаимодействия с пользователем
-        $this->userAction($login);                            // взаимодействие с пользователем      
+        $this->systemProcess($login);               // методы без взаимодействия с пользователем
+        $this->userAction($login);            // взаимодействие с пользователем      
     }
     
-    private function systemProcess()
+    private function systemProcess($login)
     {
         $this->setWinnerData() // ищет и если существует достает из базы данные по победителю, и устанавливает их в $winner, $winnerRow
+             ->setLogin($login)
              ->setGameArray()  // устанавливает игровой массив                (array)
              ->setUsers();      // разделяет юзеров на игроков и зрителей (_players, _viewers)
                                 // а также устанавливает время хода
@@ -35,9 +35,14 @@ class playGameController extends playGameModel
     {
         if($_SERVER['REQUEST_METHOD'] === 'GET'){
             if(filter_input(INPUT_GET, 'action') === 'quitGame'){
-                $this->quitGame($login);
+                $this->exitFromGame($login, 'exit');
                 
             }
+            
+            if(filter_input(INPUT_GET, 'action') === 'surrender'){
+                $this->exitFromGame($login);                
+            }
+            
             if($this->getWinner() === null){
                 if(filter_input(INPUT_GET, 'action') === 'playerMove' and $this->getMovingPlayer() === $login){
                     $this->setPlayerMove(filter_input(INPUT_GET, 'property'));

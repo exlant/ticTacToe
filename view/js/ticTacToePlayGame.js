@@ -1,8 +1,21 @@
 $(function(){
     $("table.type2d").moveToCenter(20,40);
     //отправка запроса на ход назад, ничью, сдаться, 
-    $(".fieldButton div").on("click", function(){
+    $("div.centerContainer div.wrapper div.field div.fieldButton div").on("click", function(){
+        if(this.id === 'outGame'){
+            location.href = DOMEN+'/'+TICTACTOE+'/quitGame';
+            return true;
+        }
+        if(this.id === 'surrender'){
+            location.href = DOMEN+'/'+TICTACTOE+'/surrender';
+            return true;
+        }
         sendQuery(2, this);
+    });
+    
+    
+    $("div.centerContainer div.wrapper div.field div.fieldButton #outGame").on("click", function(){
+        
     });
     
     var stack = {

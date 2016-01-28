@@ -9,6 +9,7 @@ class playGameModel
     private $_Data = null;        // экземпляр класса mongoDb
     public $_time = null;         // объект отвечающий за время
     
+    public $login = null;
     private $_roomParam = array();   // параметры комнаты                                   (array)
     private $_winner = null;      // логин победителя                                    (string)
     private $_winnerRow = array();  // координаты выйгравшей линии                         (array)   
@@ -33,6 +34,16 @@ class playGameModel
         return $this->_Data;
     }
 
+    public function setLogin($login)
+    {
+        $this->login = $login;
+        return $this;
+    }
+    
+    public function getLogin()
+    {
+        return $this->login;
+    }
     
     public function getRoomParam()   // гетер для roomParam
     {
@@ -147,7 +158,7 @@ class playGameModel
         if($move){  // если пришедшие данные хода корректны
             $this->setNextMovePlayer()
                  ->burnMoveToGameArray($move);
-            $this->_chekGameArray = new ticTacToeFoursquare($this->getGameArray(), $move, $this->getRoomParam()['figureInArow'], $this->getRoomParam()['points']); // ищем победителя в массиве с игровым полем
+            $this->_chekGameArray = new ticTacToeFoursquare($this->getMovingPlayer(), $this->getGameArray(), $move, $this->getRoomParam()['figureInArow'], $this->getRoomParam()['points']); // ищем победителя в массиве с игровым полем
             if($this->getRoomParam()['points'] === 'yes'){
                 $this->checkWinByPoints();
             }else{
@@ -173,25 +184,46 @@ class playGameModel
             $this->setNextMovePlayer(-1)
                  ->_Data->setMoveBack($this->getRoomParam()['queries'],$gameArrayPuth);
         }
+        if($this->getRoomParam()['points'] === 'yes'){
+            $this->unsetFromWinnerRows();
+        }
         
         // записыем ход назад в базу
-        $this->_Data->updateDB();
+        $this->_Data->setStandartFindStartGame()
+                    ->updateDB();
         return $this;
     }
+    // удаляет из winnerRows ряды, в которых есть ячейки, соответствующие отмененому ходу
+    public function unsetFromWinnerRows()
+    {
+        $rowsArray = $this->getRoomParam()['winnerRow'];
+        $lastMove = $this->getLastMove()[0];
+        foreach($rowsArray as $rows){
+            foreach($rows as $row){
+                if(array_search($lastMove, $row) !== false){
+                    $this->_Data->setUpdateWinnerRowMoveBack($rows);
+                    break;
+                }
+            } 
+        }
+        return $this;
+    }
+    
     //записуем новый ход в массив, и в update()
     private function burnMoveToGameArray($move)
     {
         $newGameArray = $this->getGameArray();
+        $figure = $this->getPlayers()[$this->getMovingPlayer()]['figure'];
         if($this->getRoomParam()['type'] === '2d'){
             $key = 'gameArray.'.$move['y'].'.'.$move['x'];
-            $newGameArray[$move['y']][$move['x']] = $this->getMovingPlayer();
+            $newGameArray[$move['y']][$move['x']] = $figure;
             
         }elseif($this->getRoomParam()['type'] === '3d'){
             $key = 'gameArray.'.$move['z'].'.'.$move['y'].'.'.$move['x'];
-            $newGameArray[$move['z']][$move['y']][$move['x']] = $this->getMovingPlayer();
+            $newGameArray[$move['z']][$move['y']][$move['x']] = $figure;
         }
         
-        $this->_Data->setUpdateRoomAfterMove($key, $move);
+        $this->_Data->setUpdateRoomAfterMove($key, $move, $figure);
         $this->setGameArray($newGameArray);
         return true;
     }
@@ -272,9 +304,8 @@ class playGameModel
                 }
             }
         }
-        if(!empty($this->_chekGameArray->getWarnings())){
-            $this->_Data->setWarnings($this->_chekGameArray->getWarnings(), count($this->getRoomParam()['movies']));
-        }
+        $this->_Data->setWarnings($this->_chekGameArray->getWarnings());
+        
     }
     // устанавливает существующие в базе warnings в переменную $this->_warnings
     protected function setWarnings()
@@ -309,7 +340,7 @@ class playGameModel
         
         while($player = current($players)){
             if($player['move']){
-                $this->_Data->setUpdateCurentPlayer($players, $player, $this->_time
+                $this->_Data->setUpdateCurentPlayer($this->getRoomParam()['players'], $player, $this->_time
                         ->timeLeft($player['timeLeft'], $player['timeShtamp']));
                 if($type === 1){
                     $next = next($players);
@@ -324,7 +355,7 @@ class playGameModel
             next($players);
         }
         
-        $this->_Data->setUpdateNextPlayer($players, $nextNick, $this->_time
+        $this->_Data->setUpdateNextPlayer($this->getRoomParam()['players'], $nextNick, $this->_time
                 ->timeShtamp($players[$nextNick]['timeLeft']));
         
         return $this;   
@@ -334,10 +365,62 @@ class playGameModel
     {
         $this->_Data->changePlayerStatus($this->_movingPlayer);      //меняем статус ходящего игрока на зрителя
         $this->_Data->addToStatistics('lose', $this->_movingPlayer); // добавляем игроку +1 к проиграшам
-        $this->_players[$this->_movingPlayer]['status'] = 'view';    //переводим игрока в режим просмотра в текущем массиве игроков
-        
+        $this->_players[$this->_movingPlayer]['status'] = 'view';    //переводим игрока в режим просмотра в текущем массиве игроков       
     }
     
+    protected function exitFromGame($login, $type = '')
+    {
+        $players = $this->getPlayers();
+        $move = $players[$login]['move'];
+        $freePlase['figure'] = $players[$login]['figure'];
+        unset($players[$login]);
+        $countPlayers = count($players);
+        
+        if($countPlayers < 2){
+            
+        }
+        if($move){
+            $this->setNextMovePlayer();
+        }
+        // переводим в зрители
+        $this->_Data->changePlayerStatus($login, 'view');
+        
+        //выбрасываем из комнаты
+        if($type === 'exit'){
+            $this->_Data->playerExit();
+        }
+        $queries = $this->generateNewQueries($login, $this->getRoomParam()['queries']);
+        $this->_Data->setFreePlace($this->generateFreePlace($login))
+                    ->setQuery($queries, 0)
+                    ->setFindForOutPlayer();
+        var_dump($this->_Data->getFind());
+        var_dump($this->_Data->getUpdate());
+        
+        
+    }
+    // устанавливает массив с параметрами вышедшего игрока
+    private function generateFreePlace($login)
+    {
+        $freePlace = array(
+            'figure' => null,
+            'timeLeft' => null,
+            'timeShtamp' => null,
+            'points' => null
+        );
+        array_walk($freePlace, function(&$item, $key, $login){
+            $item = $this->getPlayers()[$login][$key];
+        }, $login);
+        return $freePlace;
+    }
+    
+    private function generateNewQueries($login, $queries)
+    {
+        array_walk($queries, function(&$item) use ($login){
+            unset($item[$login]);
+        });
+        return $queries;
+    }
+
     protected function quitGame($login)  //выйти из игры
     {
         $players = $this->getPlayers();
@@ -396,7 +479,7 @@ class playGameModel
         $queries = $this->getRoomParam()['queries'];
         if($value === 2 or $value === -1){
             // новый запрос, или отмена запроса, выставляет все предыдущие запросы пользователей в 0
-            $this->_Data->setQuery($queries, $query, $value);
+            $this->_Data->setQuery($queries, $value, $query);
         }elseif($value === 1){
             $negativeAnswer = 0;
             // если это не подтверждение отмены действия
@@ -414,7 +497,8 @@ class playGameModel
                 $this->_Data->updateQuery($query);
             }           
         }
-        $this->_Data->updateDB();
+        $this->_Data->setStandartFindStartGame()
+                    ->updateDB();
         return $this;
     }
     
@@ -438,8 +522,9 @@ class playGameModel
                 // все подтвердили confirm(подтверждение отмены запроса) 
                 // обновляем массив с запросами
                 if($count === $countPlayers - 1 and $query === "confirm"){
-                    $this->_Data->setQuery($queries, $query, 0);
-                    $this->_Data->updateDB();
+                    $this->_Data->setQuery($queries, 0)
+                                ->setStandartFindStartGame()
+                                ->updateDB();
                 }
                 // кто то сделал запрос
                 if($value === 2 and $login !== $player){
@@ -468,8 +553,7 @@ class playGameModel
             
             if($break === 1){
                 break;
-            }
-            
+            }           
         }
         return $stack;
     }

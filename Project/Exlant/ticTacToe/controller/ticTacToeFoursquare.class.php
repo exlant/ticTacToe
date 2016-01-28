@@ -11,6 +11,7 @@ class ticTacToeFoursquare
     private $points = 0;                // очки                               (integer)
     private $warnings = array();        // массив с возможными угрозами        (array)  
     private $movingPlayer = null;      // ходящий игрок                       (string)
+    private $movingFigure = null;      // фигура игрока                       (string)
     private $move = null;              // сделанный ход                       (array)
     private $rowLength = 0;           // количество фигур в ряд для победы    (integer)
     private $_lines = array(
@@ -39,12 +40,13 @@ class ticTacToeFoursquare
     );
     private $_stack = array();   
 
-    public function __construct($foursquare, $move, $rowLength, $points) 
+    public function __construct($movingPlayer, $foursquare, $move, $rowLength, $points) 
     {
         $this->setFoursquare($foursquare)   // устанавливает поле
              ->setMove($move)               // устанавливает сделаный ход
              ->setRowLength($rowLength)     // устанавливает длину ряда
-             ->setMovingPlayer()            // логин походившего игрока
+             ->setMovingPlayer($movingPlayer)// логин походившего игрока
+             ->setMovingFigure()            // фигура игрока, который ходит
              ->createStack()                // заполняем стэк
              ->executing()                  // проверяет ряды во все напровлени от поставленного хода
              ->setWarnings();               // выставляет угрозы        
@@ -63,7 +65,7 @@ class ticTacToeFoursquare
             $this->_stack[$stringName][$direction]['obstacle'] = 1;
             // если предыдущая клетка не пуста, то прибавляем границе +1
             if($this->getLastMove($stringName, $direction) !== 'empty'){
-                $this->_stack[$stringName][$direction]['border']++;
+                $this->_stack[$stringName]['border']++;
             }        
             return true;
         }
@@ -83,7 +85,7 @@ class ticTacToeFoursquare
             return true;
         }
         // клетка совпала с ходящим
-        if($cell === $this->getMovingPlayer()){
+        if($cell === $this->getMovingFigure()){
             // если в ряд уже больше чем надо
             if(count($this->_stack[$stringName]['warnings']) > $this->getRowLength()){
                 $this->_stack[$stringName][$direction]['obstacle'] = 1;
@@ -298,6 +300,17 @@ class ticTacToeFoursquare
         return $this->rowLength;
     }
     
+    private function setMovingFigure()
+    {
+        $this->movingFigure = $this->getForsquareCell($this->getMove()['y'], $this->getMove()['x']);
+        return $this;
+    }
+    
+    private function getMovingFigure()
+    {
+        return $this->movingFigure;
+    }
+    
     private function setMovingPlayer()
     {
         $this->movingPlayer = $this->getForsquareCell($this->getMove()['y'], $this->getMove()['x']);
@@ -324,6 +337,9 @@ class ticTacToeFoursquare
     
     private function getLastMove($stringName, $direction, $param = 'value')
     {
+        if(empty($this->_stack[$stringName][$direction]['movies'])){
+            return false;
+        }
         $num = count($this->_stack[$stringName][$direction]['movies']);
         $prev = $num - 2;
         $cell = $this->_stack[$stringName][$direction]['movies'][$prev];

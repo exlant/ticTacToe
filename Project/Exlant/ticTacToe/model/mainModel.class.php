@@ -12,7 +12,7 @@ class mainModel extends mongoDB
     protected $fildLength = array('min' => 3, 'max' => 20);
     protected $roundTime = array('min' => 30, 'max' => 300);
     protected $figureInArow = array('min' => 3, 'max' => 6);
-    protected $pointsNum = array('min' => 3, 'max' => 50);
+    protected $pointsNum = array('min' => 3, 'max' => 20);
     protected $figure = array(
         'cross' => 'Крестик',
         'zero' => 'Нолик',
@@ -128,13 +128,14 @@ class mainModel extends mongoDB
             'busyFigure' => null,        // занятые фигуры
             'movies' => array(),    // массив со сделанными ходами,(login, move),
             'change'    => 0,       // были изменения ставим +1, 
-            'queries'     => null, 
+            'queries'     => null,
+            'freePlace' => array(),  // свободные места, если кто-то вышел из комнаты в игре, его могут заменить
         );
         $this->getCollection()
              ->insert($room);
     }
     
-    protected function createRoom($login,$gameType,$fildLength,$figure,$numberPlayers,$roundTime, $figureInArow, $points, $pointsNum, $blitz)
+    protected function createRoom($login,$fildLength,$figure,$numberPlayers,$roundTime, $figureInArow, $points, $pointsNum, $blitz)
     {                                               //добавляются характеристики комнаты
         $find = array(
             'creater' => $login,
@@ -144,7 +145,7 @@ class mainModel extends mongoDB
         
         $update = array('$set' => array(
             'status' => 'created',
-            'type' => $gameType,
+            'type' => '2d',     // только в 2d
             'sideLength' => $fildLength,
             'figureInArow' => $figureInArow,
             'numPlayers' => $numberPlayers,

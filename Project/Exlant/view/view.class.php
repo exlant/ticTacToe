@@ -81,7 +81,6 @@ class view
             $output .= '<tr>
                     <td>'.$iterator.'</td>
                     <td>'.self::reduceLength($room['creater'], 15).'</td>
-                    <td>'.$room['type'].'</td>
                     <td>'.$room['sideLength'].'</td>
                     <td>'.$room['figureInArow'].'</td>
                     <td>'.$room['pointsText'].'</td>
@@ -114,7 +113,7 @@ class view
         return $str;
     }
     // игроки и зрители комнаты для игры в крестики нолики
-    static public function viewRoomsUsers($players, $viewers, $login)
+    static public function viewRoomsUsers($players, $viewers, $point)
     {
         $output = '<div class="wrapperUsers">';
         if($players) {
@@ -125,15 +124,16 @@ class view
                 <ul>';
             foreach($players as $player){
                 if($player['exit'] === 'no'){
-                    $url = ($player['name'] === $login) ? ' | <a href="'.DOMEN.'/'.TICTACTOE.'/quitGame">Выйти</a>' : '';
                     $moving = ($player['move']) ? 'moving' : '';
                     
                     $output .= '<li class="player '.$moving.'">'
                         .self::reduceLength($player['name'], 11).' | '
                         . '<img class="fieldFigure" src="'.DOMEN.self::$_imgUrl.$player['figure'].'.gif">'
                         .' | '
-                        .$player['timeOut']
-                        .$url;
+                        .$player['timeOut'];
+                    if($point === 'yes'){
+                        $output .= ' | '.$player['points'];
+                    }
                 }
             }
             $output .= '</ul>'
@@ -145,10 +145,8 @@ class view
                 </div>';
 
             foreach($viewers as $viewer){
-                $url = ($viewer['name'] === $login) ? ' | <a href="'.DOMEN.'/'.TICTACTOE.'/quitGame">Выйти</a>' : '';
                 $output .= '<div class="player">'
                         .$viewer['name']. ' | '
-                        .$url
                     .'</div>';
             }
             $output .='</div>';
@@ -172,7 +170,7 @@ class view
     }
     
     // поле 2d для игры в крестики-нолики 
-    static public function field2d($login, $field, $lastMove, $movingPlayer, $figure, $warnings, $winnerSide)
+    static public function field2d($login, $field, $lastMove, $movingPlayer, $warnings, $winnerSide)
     {
         $out = '<table class="type2d">';
         $countField = count($field);
@@ -187,7 +185,7 @@ class view
                 $out .= '<td>';
                 if($valueX !== 'empty'){
                     $backLlight = self::setBacklight(array('y' => $sideY, 'x' => $sideX), $lastMove, $warnings, $winnerSide);
-                    $out .= '<img class="fieldFigure" src="'.DOMEN.self::$_imgUrl.$figure[$valueX].$backLlight.'.gif">';
+                    $out .= '<img class="fieldFigure" src="'.DOMEN.self::$_imgUrl.$valueX.$backLlight.'.gif">';
                 }else{
                     if($movingPlayer === $login){
                         $out .= '<a href="'.DOMEN.'/'.TICTACTOE.'/playerMove/y-'.$sideY.'_x-'.$sideX.'">'
