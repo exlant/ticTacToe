@@ -26,8 +26,12 @@ class playGameDataMongoDB extends mongoDB
         return $this->login;
     }   
         
-    public function playerExit()        // меняем поле(exit) игрока с no на yes
+    public function playerExit($login, $playerMove)  // меняем поле(exit) игрока с no на yes
     {
+        if($playerMove){
+            $this->_update['$set']['players'][$login]['exit'] = 'yes';
+            return $this;
+        }
         $this->setUpdate('players.'.$this->getLogin().'.exit', '$set', 'yes');
         return $this;
     }
@@ -112,8 +116,12 @@ class playGameDataMongoDB extends mongoDB
         return $this;
     }
     // меняет статус пользователяв  комнате на view / play
-    public function changePlayerStatus($login, $status)
+    public function changePlayerStatus($login, $status, $playerMove)
     {
+        if($playerMove){
+            $this->_update['$set']['players'][$login]['status'] = $status;
+            return $this;
+        }
         $this->setUpdate('players.'.$login.'.status', '$set', $status);
         return $this;
     }
@@ -131,7 +139,13 @@ class playGameDataMongoDB extends mongoDB
              ->setFind('players.'.$this->getLogin().'.exit', 'no');
         return $this;
     }
-
+    // устанавливает изменение в комнате
+    public function setChangeInRoom()
+    {
+        $this->setUpdate('change', '$inc', 1);
+        return $this;
+    }
+    
     private function getGameResult($type)
     {
         $result = array(
@@ -159,6 +173,7 @@ class playGameDataMongoDB extends mongoDB
         $this->setCollection('users')
              ->update($find,$update);
         $this->setCollection(self::collection);
+        return $this;
     }
     
     public function setWarnings($warning)

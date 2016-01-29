@@ -35,7 +35,7 @@ class playGameController extends playGameModel
     {
         if($_SERVER['REQUEST_METHOD'] === 'GET'){
             if(filter_input(INPUT_GET, 'action') === 'quitGame'){
-                $this->exitFromGame($login, 'exit');
+                $this->exitFromGame($login, 'outGame');
                 
             }
             
@@ -58,7 +58,7 @@ class playGameController extends playGameModel
     {
         if($this->getPlayerLeftTime() <= 0){
             $this->setNextMovePlayer();             // передаем ход следующему игроку
-            $this->dropUser();  // переводим текущего игрока в статус view, и записуем ему +1 в lose
+            //$this->dropUser();  // переводим текущего игрока в статус view, и записуем ему +1 в lose
             
             $countPlayers = 0;
             foreach($this->getPlayers() as $val){

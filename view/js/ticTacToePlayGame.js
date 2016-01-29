@@ -2,22 +2,21 @@ $(function(){
     $("table.type2d").moveToCenter(20,40);
     //отправка запроса на ход назад, ничью, сдаться, 
     $("div.centerContainer div.wrapper div.field div.fieldButton div").on("click", function(){
-        if(this.id === 'outGame'){
-            location.href = DOMEN+'/'+TICTACTOE+'/quitGame';
+        if(this.id === 'outGame' || this.id === 'surrender'){
+            var data = {
+                access: 1,
+                object: "tictactoe",
+                action: "exitFromGame",
+                value: this.id
+            };
+            sendAjax(data, data.value);
+            
             return true;
         }
-        if(this.id === 'surrender'){
-            location.href = DOMEN+'/'+TICTACTOE+'/surrender';
-            return true;
-        }
+        
         sendQuery(2, this);
     });
-    
-    
-    $("div.centerContainer div.wrapper div.field div.fieldButton #outGame").on("click", function(){
         
-    });
-    
     var stack = {
         queryDialog: 0,
         divDialog: null,
@@ -127,7 +126,7 @@ $(function(){
             dataType: "json",
             async: true,
             success: function (msg) {
-                console.log(msg);
+                //console.log(msg);
                 if(type === "updatePlayData"){
                     if(msg.field){
                         $("div.field table").replaceWith(msg.field);
@@ -147,6 +146,9 @@ $(function(){
                             createDialogWindow(message, 1);
                             return true;
                     }
+                }
+                if(type === "outGame"){
+                    location.href = DOMEN+'/'+TICTACTOE;
                 }
             }
         });

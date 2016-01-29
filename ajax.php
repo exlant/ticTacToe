@@ -94,6 +94,9 @@ class ajax extends mongoDB
             if($this->getActionP() === 'checkQuery'){
                 $this->checkQuery($login);
             }
+            if($this->getActionP() === 'exitFromGame'){
+                $this->exitFromGame($login);
+            }
         }
         if($this->getObjectP() === 'main'){
             if($this->getActionP() === 'updateUsersOnline'){
@@ -144,6 +147,14 @@ class ajax extends mongoDB
         echo json_encode($data);
     }
     
+    private function exitFromGame($login)
+    {
+        $playGame = new tictactoePlayGame($login);
+        startCore::$objects['playGame']->exitFromGame($login, $this->getValue());
+        echo true;
+    }
+
+
     // обновление пользователей онлайн
     private function updateUsersOnline()
     {

@@ -7,7 +7,7 @@ use Project\Exlant\ticTacToe\controller\time;
 class playGameModel
 {
     private $_Data = null;        // экземпляр класса mongoDb
-    public $_time = null;         // объект отвечающий за время
+    public $time = null;         // объект отвечающий за время
     
     public $login = null;
     private $_roomParam = array();   // параметры комнаты                                   (array)
@@ -26,7 +26,7 @@ class playGameModel
     public function __construct(playGameDataMongoDB $mongoDB, $roomParam) {
         $this->_Data = $mongoDB;
         $this->_roomParam = $roomParam;       // устанавливаем roomParam
-        $this->_time = new time($roomParam['blitz']);
+        $this->time = new time($roomParam['blitz']);
     }
     
     private function getData()          // экземпляр класса mongoDb
@@ -98,7 +98,7 @@ class playGameModel
             if($val['status'] === 'play'){
                 $data['players'][$player] = $val;
                 // время, которое будет выведено пользователю
-                $data['players'][$player]['timeOut'] = $this->_time
+                $data['players'][$player]['timeOut'] = $this->time
                         ->getPlayerTime($val['timeLeft'], $val['timeShtamp'], $val['move']);
                 if($val['move']){
                     $this->setPlayerLeftTime($data['players'][$player]['timeOut']);
@@ -112,11 +112,15 @@ class playGameModel
         $this->_players = (isset($data['players'])) ? $data['players'] : null;
         $this->_viewers = (isset($data['viewers'])) ? $data['viewers'] : null;
         return $this;
+        
     }
     
     public function getPlayers()
     {
-        return $this->_players;
+        if($this->_players){
+            return $this->_players;
+        }
+        return array();
     }
     
     public function getViewers()
@@ -340,8 +344,8 @@ class playGameModel
         
         while($player = current($players)){
             if($player['move']){
-                $this->_Data->setUpdateCurentPlayer($this->getRoomParam()['players'], $player, $this->_time
-                        ->timeLeft($player['timeLeft'], $player['timeShtamp']));
+                $this->_Data->setUpdateCurentPlayer($this->getRoomParam()['players'], $player, 
+                        $this->time->timeLeft($player['timeLeft'], $player['timeShtamp']));
                 if($type === 1){
                     $next = next($players);
                     $nextNick = ($next) ? $next['name'] : reset($players)['name'];
@@ -355,61 +359,71 @@ class playGameModel
             next($players);
         }
         
-        $this->_Data->setUpdateNextPlayer($this->getRoomParam()['players'], $nextNick, $this->_time
+        $this->_Data->setUpdateNextPlayer($this->getRoomParam()['players'], $nextNick, $this->time
                 ->timeShtamp($players[$nextNick]['timeLeft']));
         
         return $this;   
     }
     
-    protected function dropUser()
-    {
-        $this->_Data->changePlayerStatus($this->_movingPlayer);      //меняем статус ходящего игрока на зрителя
-        $this->_Data->addToStatistics('lose', $this->_movingPlayer); // добавляем игроку +1 к проиграшам
-        $this->_players[$this->_movingPlayer]['status'] = 'view';    //переводим игрока в режим просмотра в текущем массиве игроков       
-    }
-    
-    protected function exitFromGame($login, $type = '')
+    public function exitFromGame($login, $type = '')
     {
         $players = $this->getPlayers();
         $move = $players[$login]['move'];
-        $freePlase['figure'] = $players[$login]['figure'];
-        unset($players[$login]);
         $countPlayers = count($players);
-        
-        if($countPlayers < 2){
-            
-        }
-        if($move){
-            $this->setNextMovePlayer();
-        }
-        // переводим в зрители
-        $this->_Data->changePlayerStatus($login, 'view');
-        
+        $playerMove = 0;
+        $addToStatistic = 0;
+        $setFreePlace = 0;
         //выбрасываем из комнаты
-        if($type === 'exit'){
-            $this->_Data->playerExit();
+        if($type === 'outGame'){
+            $this->_Data->playerExit($login, $playerMove)
+                 ->setFreePlace($this->generateFreePlace($login, $playerMove));
+            $setFreePlace = 1;
         }
-        $queries = $this->generateNewQueries($login, $this->getRoomParam()['queries']);
-        $this->_Data->setFreePlace($this->generateFreePlace($login))
-                    ->setQuery($queries, 0)
-                    ->setFindForOutPlayer();
-        var_dump($this->_Data->getFind());
-        var_dump($this->_Data->getUpdate());
+        if($this->getRoomParam()['players'][$login]['status'] === 'play' and $this->getRoomParam()['status']  === 'start' ){
+            unset($players[$login]);
+            if($countPlayers === 2){
+                
+                $this->endGame(array_pop($players)['name']);
+                $addToStatistic = 1;
+            }else {
+                if($move){
+                    $this->setNextMovePlayer();
+                    $playerMove = 1;
+                }
+                // переводим в зрители
+                $this->_Data->changePlayerStatus($login, 'view', $playerMove);
+                if($setFreePlace !==1){
+                    $this->_Data->setFreePlace($this->generateFreePlace($login, $playerMove));
+                }
+            }
+            if($addToStatistic !== 1){
+                $this->_Data->addToStatistics('lose', $login);
+            }
+            $queries = $this->generateNewQueries($login, $this->getRoomParam()['queries']);
+            $this->_Data->setQuery($queries, 0)
+                 ->setFindForOutPlayer();
+        }
         
-        
+        $this->_Data->setChangeInRoom()
+                    ->updateDB();
+        return $this;
     }
     // устанавливает массив с параметрами вышедшего игрока
-    private function generateFreePlace($login)
+    private function generateFreePlace($login, $playerMove)
     {
         $freePlace = array(
             'figure' => null,
             'timeLeft' => null,
-            'timeShtamp' => null,
-            'points' => null
+            'timeOut' => null,
+            'points' => null,
+            'free'   => 1,
         );
-        array_walk($freePlace, function(&$item, $key, $login){
-            $item = $this->getPlayers()[$login][$key];
-        }, $login);
+        $freePlace['figure'] = $this->getPlayers()[$login]['figure'];
+        $freePlace['timeLeft'] = ($playerMove) 
+                ? $this->time->timeLeft($this->getPlayers()[$login]['timeLeft'], $this->getPlayers()[$login]['timeShtamp']) 
+                : $this->getPlayers()[$login]['timeLeft'];
+        $freePlace['timeOut'] = $freePlace['timeLeft'];
+        $freePlace['points'] = $this->getPlayers()[$login]['points'];
         return $freePlace;
     }
     
@@ -437,9 +451,8 @@ class playGameModel
         exit();
     }
     
-    protected function endGame($winner, $winnerSide = array())
+    protected function endGame($winner)
     {
-        
         //меняем статус игры на end, записуем победителя
         $this->_Data->setUpdateEndGame($winner);
         //добавляем игроку в статистику побед, проиграшей, ничьих +1

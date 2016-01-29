@@ -146,7 +146,7 @@ class view
 
             foreach($viewers as $viewer){
                 $output .= '<div class="player">'
-                        .$viewer['name']. ' | '
+                        .$viewer['name']
                     .'</div>';
             }
             $output .='</div>';
