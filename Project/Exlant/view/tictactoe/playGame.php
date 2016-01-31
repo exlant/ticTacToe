@@ -50,7 +50,7 @@ $newplayers = array_merge($players, $roomParams['freePlace']);
     </div><!-- 
  -->
     <?php
-    var_dump($roomParams);
+    var_dump($roomParams['warnings']);
     if($roomParams['type'] === '3d'){
         echo '<div class="type3d">';
         foreach($gameArray as $sideZ => $valueZ){

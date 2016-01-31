@@ -30,6 +30,7 @@ class ticTacToeFoursquare
         'obstacle' => 0,       // припятствие, стенка или чужая фигура
         'empty'    => 0,       // количество пустых клеток в направлении
         'movies'   => array(), // координаты хода
+        'emptyWithoutSkip' => array(),
     );
     private $_lineFiller = array(
             'border'      => 0,          // количество границ, 
@@ -82,6 +83,12 @@ class ticTacToeFoursquare
             }
             $this->_stack[$stringName][$direction]['empty']++;
             array_push($this->_stack[$stringName]['emptyBorder'], array('y' => $y, 'x' => $x));
+            if(count($this->_stack[$stringName][$direction]['emptyWithoutSkip']) > 0){
+                $this->_stack[$stringName][$direction]['emptyWithoutSkip'] = array();
+            }else{
+                array_push($this->_stack[$stringName][$direction]['emptyWithoutSkip'], array('y' => $y, 'x' => $x));
+            }
+            
             return true;
         }
         // клетка совпала с ходящим
@@ -196,7 +203,9 @@ class ticTacToeFoursquare
             if($this->getRowLength() - 1 === count($val['inArow'])
                     and $val['border'] <= 1
                     and count($val['emptyInArow']) < 2){
-                $warnings['availableCell'] = $val['emptyBorder'];
+                // array_values() для mongoDb, которое не считает массивом елемент,
+                // в котором индексация не с нуля и не попорядку
+                $warnings['availableCell'] = array_values(array_merge($val['minus']['emptyWithoutSkip'],$val['plus']['emptyWithoutSkip']));
                 $warnings['movies'] = $val['inArow'];
                 // нужно занять все доступные клетки, что бы снять угрозу
                 $warnings['add'] = 'all';
@@ -311,9 +320,9 @@ class ticTacToeFoursquare
         return $this->movingFigure;
     }
     
-    private function setMovingPlayer()
+    private function setMovingPlayer($movingPlayer)
     {
-        $this->movingPlayer = $this->getForsquareCell($this->getMove()['y'], $this->getMove()['x']);
+        $this->movingPlayer = $movingPlayer;
         return $this;
     }
     

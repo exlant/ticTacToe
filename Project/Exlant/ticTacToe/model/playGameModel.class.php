@@ -64,8 +64,20 @@ class playGameModel
     
     protected function setWinnerData()
     {
-        $this->_winner = $this->getRoomParam()['winner'];
-        $this->_winnerRow = $this->getRoomParam()['winnerRow'];
+        if($this->getRoomParam()['status'] === 'end'){
+            $this->_winner = $this->getRoomParam()['winner'];
+            $winnerRow = array();
+            foreach($this->getRoomParam()['winnerRow'] as $row){
+                foreach($row as $cell){
+                    if(array_search($cell, $winnerRow) === false){
+                        $winnerRow[] = $cell;
+                    }
+                }
+                
+            }
+            $this->_winnerRow = $winnerRow;
+        }
+        
         return $this;
     }
     
@@ -280,7 +292,7 @@ class playGameModel
         }
         // удаляется прерванные предупреждения отдельным запросом
         // Cannot update '' at the same time
-        var_dump($this->_Data->getUpdate());
+        //var_dump($this->_Data->getUpdate());
         $this->_Data->delateWarnings();
         $this->_Data->setWarnings($this->_chekGameArray->getWarnings());
         

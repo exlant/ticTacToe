@@ -154,6 +154,7 @@ class ajax extends mongoDB
     {
         new tictactoePlayGame($login);
         startCore::$objects['playGame']->exitFromGame($login, $this->getValue());
+        echo true;
     }
     
     private function playerMove($login)

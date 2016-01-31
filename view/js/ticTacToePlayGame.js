@@ -134,7 +134,7 @@ $(function(){
             type: "POST",
             url: "http://tictactoe.develop/ajax.php",
             data: data,
-            dataType: "html",
+            dataType: "json",
             async: true,
             success: function (msg) {
                 //console.log(msg);
@@ -162,7 +162,7 @@ $(function(){
                     location.href = DOMEN+'/'+TICTACTOE;
                 }
                 if(type === "playerMove"){
-                    console.log(msg);
+                    //console.log(msg);
                     var data = {
                         access: 1,
                         object: "tictactoe",
