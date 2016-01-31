@@ -368,15 +368,17 @@ class playGameModel
     public function exitFromGame($login, $type = '')
     {
         $players = $this->getPlayers();
-        $move = $players[$login]['move'];
+        $move = (isset($players[$login]['move'])) ? $players[$login]['move'] : null;
         $countPlayers = count($players);
         $playerMove = 0;
         $addToStatistic = 0;
         $setFreePlace = 0;
         //выбрасываем из комнаты
         if($type === 'outGame'){
-            $this->_Data->playerExit($login, $playerMove)
-                 ->setFreePlace($this->generateFreePlace($login, $playerMove));
+            $this->_Data->playerExit($login, $playerMove);
+            if($this->getRoomParam()['players'][$login]['status'] === 'play'){
+                $this->_Data->setFreePlace($this->generateFreePlace($login, $playerMove));
+            }
             $setFreePlace = 1;
         }
         if($this->getRoomParam()['players'][$login]['status'] === 'play' and $this->getRoomParam()['status']  === 'start' ){
@@ -400,11 +402,10 @@ class playGameModel
                 $this->_Data->addToStatistics('lose', $login);
             }
             $queries = $this->generateNewQueries($login, $this->getRoomParam()['queries']);
-            $this->_Data->setQuery($queries, 0)
-                 ->setFindForOutPlayer();
+            $this->_Data->setQuery($queries, 0);
         }
-        
         $this->_Data->setChangeInRoom()
+                    ->setFindForOutPlayer()
                     ->updateDB();
         return $this;
     }
@@ -412,45 +413,66 @@ class playGameModel
     private function generateFreePlace($login, $playerMove)
     {
         $freePlace = array(
-            'figure' => null,
-            'timeLeft' => null,
+            'figure' => $this->getPlayers()[$login]['figure'],
+            'timeLeft' => ($playerMove) 
+                ? $this->time->timeLeft($this->getPlayers()[$login]['timeLeft'], $this->getPlayers()[$login]['timeShtamp']) 
+                : $this->getPlayers()[$login]['timeLeft'],
             'timeOut' => null,
-            'points' => null,
+            'points' => $this->getPlayers()[$login]['points'],
             'free'   => 1,
         );
-        $freePlace['figure'] = $this->getPlayers()[$login]['figure'];
-        $freePlace['timeLeft'] = ($playerMove) 
-                ? $this->time->timeLeft($this->getPlayers()[$login]['timeLeft'], $this->getPlayers()[$login]['timeShtamp']) 
-                : $this->getPlayers()[$login]['timeLeft'];
         $freePlace['timeOut'] = $freePlace['timeLeft'];
-        $freePlace['points'] = $this->getPlayers()[$login]['points'];
         return $freePlace;
     }
     
-    private function generateNewQueries($login, $queries)
+    private function generateNewQueries($login, $queries, $type = 'remove')
     {
-        array_walk($queries, function(&$item) use ($login){
-            unset($item[$login]);
-        });
+        foreach($queries as $query => &$players){
+            if($type === 'add'){
+                $players[$login] = 0;
+            }else{
+                unset($players[$login]);
+            }
+            
+        }
         return $queries;
     }
-
-    protected function quitGame($login)  //выйти из игры
-    {
-        $players = $this->getPlayers();
-        if(isset($players[$login])){
-            unset($players[$login]);
-            if(count($players) < 2){
-                $this->endGame(array_pop($players)['name']);
-            }else{
-                $this->setNextMovePlayer();
-            }
-        }
-        $this->_Data->quitGame();
-        $this->redirectToPage();
-        exit();
-    }
     
+    public function takePlace($figure)
+    {
+        $countPlayers = count($this->getPlayers());
+        if((int)$this->getRoomParam()['numPlayers'] > $countPlayers
+                and $this->getRoomParam()['players'][$this->getLogin()]['status'] === 'view'
+                and !empty($this->getRoomParam()['freePlace']
+                and $this->getRoomParam()['players'][$this->getLogin()]['exit'] === 'no')){
+            foreach($this->getRoomParam()['freePlace'] as $value){
+                if($value['figure'] === $figure){
+                    $newPlayer = array(
+                       'name' => $this->getLogin(),
+                       'figure' => $figure,
+                       'status' => 'play',
+                       'exit' => 'no',
+                       'timeLeft' => $value['timeLeft'],
+                       'timeShtamp' => 0,
+                       'points' => $value['points'],
+                       'move' => null
+                    );
+                    $freePlace = $value;
+                    break;
+                }
+            }
+            $this->_Data;
+            $this->_Data->setAddPlaer($newPlayer)
+                 ->setChangeInRoom()
+                 ->setRemoveFreePlace($freePlace)
+                 ->setFindForOutPlayer()
+                 ->setQuery($this->generateNewQueries($this->getLogin(), $this->getRoomParam()['queries'], 'add'), 0)
+                 ->updateDB();
+         //var_dump($this->_Data->getFind());
+         //var_dump($this->_Data->getUpdate());
+        }
+    }
+
     protected function endGame($winner)
     {
         //меняем статус игры на end, записуем победителя
@@ -487,6 +509,11 @@ class playGameModel
         // запрос - 2;
         // подтвердить - 1;
         // отказ - "-1";
+        if(!isset($this->getPlayers()[$this->getLogin()]) 
+                or $this->getPlayers()[$this->getLogin()]['exit'] !== 'no'
+                or $this->getPlayers()[$this->getLogin()]['status'] !== 'play'){
+            return false;
+        }
         $value = (int)$value;
         // массив с запросами игроков
         $queries = $this->getRoomParam()['queries'];
@@ -517,8 +544,13 @@ class playGameModel
     
     public function checkQuery($login)
     {
+        if(!isset($this->getPlayers()[$login]) 
+                or $this->getPlayers()[$login]['exit'] !== 'no'
+                or $this->getPlayers()[$login]['status'] !== 'play'){
+            return false;
+        }
         $queries = $this->getRoomParam()['queries'];
-        $countPlayers = (int)$this->getRoomParam()['numPlayers']; 
+        $countPlayers = count($this->getPlayers()); 
         $stack = null;
         foreach($this->getRoomParam()['queries'] as $query => $players){
             $count = 0;

@@ -34,13 +34,8 @@ class playGameController extends playGameModel
     private function userAction($login)
     {
         if($_SERVER['REQUEST_METHOD'] === 'GET'){
-            if(filter_input(INPUT_GET, 'action') === 'quitGame'){
-                $this->exitFromGame($login, 'outGame');
-                
-            }
-            
-            if(filter_input(INPUT_GET, 'action') === 'surrender'){
-                $this->exitFromGame($login);                
+            if(filter_input(INPUT_GET, 'action') === 'takePlace'){
+                $this->takePlace(filter_input(INPUT_GET, 'property'));                
             }
             
             if($this->getWinner() === null){

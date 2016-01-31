@@ -137,9 +137,9 @@ class ajax extends mongoDB
             $winnerSide = startCore::$objects['playGame']->getWinnerRow();
             $gameArray = startCore::$objects['playGame']->getGameArray();       // игровое поле                         (array)
             $players = startCore::$objects['playGame']->getPlayers();           // массив с игроками
-
+            $newplayers = array_merge($players, $roomParams['freePlace']);
             $data['field'] = view::field2d($login, $gameArray, $lastMove, $movingPlayer, $warnings, $winnerSide);
-            $data['users'] = view::viewRoomsUsers($players, $viewers, $roomParams['points']);
+            $data['users'] = view::viewRoomsUsers($newplayers, $viewers, $roomParams['points'], $login);
             $data['change'] = $roomParams['change'];
         }
         
@@ -149,7 +149,7 @@ class ajax extends mongoDB
     
     private function exitFromGame($login)
     {
-        $playGame = new tictactoePlayGame($login);
+        new tictactoePlayGame($login);
         startCore::$objects['playGame']->exitFromGame($login, $this->getValue());
         echo true;
     }

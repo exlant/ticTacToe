@@ -131,12 +131,24 @@ class playGameDataMongoDB extends mongoDB
         $this->setUpdate('freePlace', '$push', $freePlace);
         return $this;
     }
+    
+    public function setRemoveFreePlace($freePlace)
+    {
+        $this->setUpdate('freePlace', '$pull', $freePlace);
+        return $this;
+    }
     // параметры поиска для выхода игрока из комнаты, или перевод его в зрители
     public function setFindForOutPlayer()
     {
         $this->setFind('creater', $this->getCreater())
              ->setFind('status', array('$in' => array('start', 'end')))
              ->setFind('players.'.$this->getLogin().'.exit', 'no');
+        return $this;
+    }
+    
+    public function setAddPlaer($player)
+    {
+        $this->setUpdate('players.'.$this->getLogin(), '$set', $player);
         return $this;
     }
     // устанавливает изменение в комнате

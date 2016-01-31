@@ -113,7 +113,7 @@ class view
         return $str;
     }
     // игроки и зрители комнаты для игры в крестики нолики
-    static public function viewRoomsUsers($players, $viewers, $point)
+    static public function viewRoomsUsers($players, $viewers, $point, $login)
     {
         $output = '<div class="wrapperUsers">';
         if($players) {
@@ -123,7 +123,7 @@ class view
                 </div>
                 <ul>';
             foreach($players as $player){
-                if($player['exit'] === 'no'){
+                if(isset($player['exit']) and $player['exit'] === 'no'){
                     $moving = ($player['move']) ? 'moving' : '';
                     
                     $output .= '<li class="player '.$moving.'">'
@@ -131,6 +131,17 @@ class view
                         . '<img class="fieldFigure" src="'.DOMEN.self::$_imgUrl.$player['figure'].'.gif">'
                         .' | '
                         .$player['timeOut'];
+                    if($point === 'yes'){
+                        $output .= ' | '.$player['points'];
+                    }
+                }elseif(isset($player['free']) and $player['free'] === 1){
+                    $text = (isset($players[$login])) 
+                            ? 'Свободное место | '
+                            : '<a id="takePlace" data-figure="'.$player['figure'].'" href="'.DOMEN.'/'.TICTACTOE.'/takePlace/'.$player['figure'].'">Зайти вместо</a> | ';
+                    $output .= '<li class="player">'
+                                . $text
+                                . '<img class="fieldFigure" src="'.DOMEN.self::$_imgUrl.$player['figure'].'.gif"> | '
+                                .$player['timeOut'];
                     if($point === 'yes'){
                         $output .= ' | '.$player['points'];
                     }
@@ -145,9 +156,11 @@ class view
                 </div>';
 
             foreach($viewers as $viewer){
-                $output .= '<div class="player">'
-                        .$viewer['name']
-                    .'</div>';
+                if(isset($viewer['exit']) and $viewer['exit'] === 'no'){
+                    $output .= '<div class="player">'
+                            .$viewer['name']
+                        .'</div>';
+                }
             }
             $output .='</div>';
         }

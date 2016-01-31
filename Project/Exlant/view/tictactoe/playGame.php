@@ -12,7 +12,6 @@ $roomParams = startCore::$objects['playGame']->getRoomParam();      // пара�
 $gameArray = startCore::$objects['playGame']->getGameArray();       // игровое поле                     (array)
 $warnings = startCore::$objects['playGame']->getWarnings();
 $lastMove = startCore::$objects['playGame']->getLastMove();
-//var_dump($roomParams['freePlace']);
 $newplayers = array_merge($players, $roomParams['freePlace']);
 //var_dump(phpinfo());
 ?>
@@ -47,7 +46,7 @@ $newplayers = array_merge($players, $roomParams['freePlace']);
                 <li>Победитель - <?= ($winner) ? $winner : '' ?>
             </ul>    
         </div>
-        <?= view::viewRoomsUsers($newplayers, $viewers, $roomParams['points']) ?>
+        <?= view::viewRoomsUsers($newplayers, $viewers, $roomParams['points'], $login) ?>
     </div><!-- 
  -->
     <?php
