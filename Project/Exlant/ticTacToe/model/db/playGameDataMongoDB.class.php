@@ -195,6 +195,19 @@ class playGameDataMongoDB extends mongoDB
         return $this;
     }
     
+    public function delateWarnings()
+    {
+        if(!isset($this->getUpdate()['$pull'])){
+            return false;
+        }
+        $update = array(
+            '$pull' => $this->getUpdate()['$pull']
+        );
+        unset($this->_update['$pull']);
+        $this->getCollection()
+             ->update($this->getFind(), $update);
+    }
+    
     public function unsetWarnings($unsetArrayField, $one, $two = null)
     {
         if($two !== null){

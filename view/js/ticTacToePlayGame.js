@@ -16,6 +16,17 @@ $(function(){
         
         sendQuery(2, this);
     });
+    
+    $("div.centerContainer div.wrapper div.field").on("click", "a", function(e){
+        e.preventDefault();
+        var data = {
+            access: 1,
+            object: "tictactoe",
+            action: "playerMove",
+            value: JSON.stringify($(this).data())
+            };
+        sendAjax(data, data.action);
+    });
         
     var stack = {
         queryDialog: 0,
@@ -42,7 +53,7 @@ $(function(){
         setInterval(function(){
             data.change = change;
             sendAjax(data, data.action);
-        },5000);
+        },updateInterval);
     }
     updateData();
     
@@ -123,7 +134,7 @@ $(function(){
             type: "POST",
             url: "http://tictactoe.develop/ajax.php",
             data: data,
-            dataType: "json",
+            dataType: "html",
             async: true,
             success: function (msg) {
                 //console.log(msg);
@@ -149,6 +160,16 @@ $(function(){
                 }
                 if(type === "outGame"){
                     location.href = DOMEN+'/'+TICTACTOE;
+                }
+                if(type === "playerMove"){
+                    console.log(msg);
+                    var data = {
+                        access: 1,
+                        object: "tictactoe",
+                        action: "updatePlayData",
+                        change: change
+                    };
+                    sendAjax(data, data.action);
                 }
             }
         });

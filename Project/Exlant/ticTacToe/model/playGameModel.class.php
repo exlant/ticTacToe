@@ -155,10 +155,8 @@ class playGameModel
         return null;
     }
     
-    protected function setPlayerMove($moveIn) // записуем ход игрока, проверяем закончил ли он игру, 
+    public function setPlayerMove($move) // записуем ход игрока, проверяем закончил ли он игру, 
     {
-        $move = $this->checkMove($moveIn);
-        
         if($move){  // если пришедшие данные хода корректны
             $this->setNextMovePlayer()
                  ->burnMoveToGameArray($move);
@@ -170,6 +168,7 @@ class playGameModel
             }
             $this->checkWarnings($move);
             
+            //var_dump($this->_Data->getUpdate());
             // записуем ход игрока в базу
             $this->_Data->updateDB();
         }
@@ -232,36 +231,6 @@ class playGameModel
         return true;
     }
     
-    // конвертирует запрос с координатами в массив
-    private function checkMove($moveIn)
-    {
-        $move = array();
-        $moveOut = array();
-        if($this->getRoomParam()['type'] === '2d'){
-            $pattern = '|^y-(\d{0,2})_x-(\d{0,2})$|';
-            if(preg_match($pattern, $moveIn, $moveOut)){
-                $move['y'] = (int)$moveOut[1];
-                $move['x'] = (int)$moveOut[2];
-                if($this->getGameArray()[$move['y']][$move['x']] !== 'empty'){
-                    return false;
-                }
-            }           
-        }       
-        if($this->getRoomParam()['type'] === '3d'){
-            $pattern = '|^z-(\d{0,2})_y-(\d{0,2})_x-(\d{0,2})$|';
-            if(preg_match($pattern, $moveIn, $moveOut)){
-                $move['z'] = (int)$moveOut[1];
-                $move['y'] = (int)$moveOut[2];
-                $move['x'] = (int)$moveOut[3];
-                if($this->getGameArray()[$move['z']][$move['y']][$move['x']] !== 'empty'){
-                    return false;
-                }
-            }
-        }
-              
-        return $move;
-    }
-    
     private function checkWinByPoints()
     {
         if($this->_chekGameArray->getPoints() > 0){
@@ -294,7 +263,8 @@ class playGameModel
                         $cellKey = array_search($move, $warning['availableCell']);
                         if($cellKey !== false){
                             if(isset($warning['add']) and $warning['add'] === 'all'){
-                                if(count($warning['availableCell']) === 1){
+                                if(count($warning['availableCell']) === 1 or
+                                        $this->checkOnMatchFigure($warning['movies'][0])){
                                     $this->_Data->unsetWarnings($warning, $one);
                                 }else{
                                     $cell = $warning['availableCell'][$cellKey];
@@ -308,8 +278,22 @@ class playGameModel
                 }
             }
         }
+        // удаляется прерванные предупреждения отдельным запросом
+        // Cannot update '' at the same time
+        var_dump($this->_Data->getUpdate());
+        $this->_Data->delateWarnings();
         $this->_Data->setWarnings($this->_chekGameArray->getWarnings());
         
+    }
+    
+    private function checkOnMatchFigure($coordination)
+    {
+        $figureInWarnings = $this->_chekGameArray->getForsquareCell($coordination['y'],$coordination['x']);
+        $figureMovingPlayer = $this->getPlayers()[$this->getLogin()]['figure'];
+        if($figureInWarnings === $figureMovingPlayer){
+            return true;
+        }
+        return false;
     }
     // устанавливает существующие в базе warnings в переменную $this->_warnings
     protected function setWarnings()

@@ -201,7 +201,7 @@ class view
                     $out .= '<img class="fieldFigure" src="'.DOMEN.self::$_imgUrl.$valueX.$backLlight.'.gif">';
                 }else{
                     if($movingPlayer === $login){
-                        $out .= '<a href="'.DOMEN.'/'.TICTACTOE.'/playerMove/y-'.$sideY.'_x-'.$sideX.'">'
+                        $out .= '<a data-sidey="'.$sideY.'" data-sidex="'.$sideX.'" href="">'
                             . '<img class="fieldEmtyMove" src="'.DOMEN.self::$_imgUrl.'emptiness.png">'
                             . '</a>';                                                   
                     }else{

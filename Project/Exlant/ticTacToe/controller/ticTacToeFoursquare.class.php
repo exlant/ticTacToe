@@ -266,7 +266,7 @@ class ticTacToeFoursquare
         return $this;
     }
 
-    private function getForsquareCell($y, $x)
+    public function getForsquareCell($y, $x)
     {
         if(isset($this->foursquare[$y][$x])){
             return $this->foursquare[$y][$x];
