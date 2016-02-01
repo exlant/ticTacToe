@@ -21,6 +21,7 @@ class mainModel extends mongoDB
     );
     protected $players = array('min' => 2, 'max' => 4);
     private $_busyFigure = array();
+    private $_startMoveFigure;   // фигура, которая первая начинает ходить
     private $roomsSingle = null; //существующие комнаты, с одним игроком
     public $userBusyInfo = array(
         'action' => null,
@@ -59,7 +60,12 @@ class mainModel extends mongoDB
              ->find($find,$needle);
         
         foreach($cursor as $value){
-            $value['playersIn'] = count($value['players']);
+            $countPlayers = 0;
+            array_walk($value['players'], function($item) use(&$countPlayers){
+                if($item['exit'] === 'no')
+                    $countPlayers++;
+            });
+            $value['playersIn'] = $countPlayers;
             $blitz = self::convertBlitz($value['blitz']);
             $points = self::convertPoints($value['points'], $value['pointsNum']);
             
@@ -130,6 +136,7 @@ class mainModel extends mongoDB
             'change'    => 0,       // были изменения ставим +1, 
             'queries'     => null,
             'freePlace' => array(),  // свободные места, если кто-то вышел из комнаты в игре, его могут заменить
+            'startMove' => null,     // фигура, того кто начинает ходить
         );
         $this->getCollection()
              ->insert($room);
@@ -272,6 +279,7 @@ class mainModel extends mongoDB
         $players[$array_key]['move'] = TRUE;    // передаем ему ход
         $players[$array_key]['timeLeft'] = $roundTime; //ставим время на ход
         $players[$array_key]['timeShtamp'] = $time->timeShtamp($roundTime);
+        $this->_startMoveFigure = $players[$array_key]['figure'];
         return $players;
     }
     
@@ -286,7 +294,12 @@ class mainModel extends mongoDB
         $new = array();
         foreach($queries as $query){
             foreach($players as $player => $val){
-                $new[$query][$player] = 0;
+                if($query === 'playAgain'){
+                    $new[$query][$val['figure']] = 0;
+                }else{
+                    $new[$query][$player] = 0;
+                }
+                
             }
         }
         return $new;        
@@ -302,12 +315,13 @@ class mainModel extends mongoDB
             'status' => 'created'
             );                    
         $update = array('$set' => array(
-            'status' => 'start',
-            'players' => $players,
+            'status'    => 'start',
+            'players'   => $players,
             'gameArray' => $gameArray,
             'timeStart' => time(),
-            'busyFigure' => $this->_busyFigure,
-            'queries' => $queries,
+            'busyFigure'=> $this->_busyFigure,
+            'queries'   => $queries,
+            'startMove' => $this->_startMoveFigure
             ));
         $this->getCollection()
              ->update($find,$update);

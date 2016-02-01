@@ -17,6 +17,27 @@ $(function(){
         sendQuery(2, this);
     });
     
+    $("div.centerContainer div.wrapper div.users").on("click", "div.button", function(){
+        if(this.id === "buttonNo"){
+            var data = {
+                access: 1,
+                object: "tictactoe",
+                action: "exitFromGame",
+                value: "outGame"
+            };
+            sendAjax(data, data.value);
+        }else if(this.id === "buttonYes"){
+            var data = {
+                access: 1,
+                object: "tictactoe",
+                action: "sendQuery",
+                query: "playAgain",
+                value: 1
+            };
+            sendAjax(data, "sendQuery");
+        }
+    });
+    
     $("div.centerContainer div.wrapper div.field").on("click", "a", function(e){
         e.preventDefault();
         var data = {
@@ -130,6 +151,17 @@ $(function(){
     
     function sendAjax(data, type)
     {
+        // перед выходом ставим 0 в запросы playAgain
+        if(type === "outGame"){
+            var playAgain = {
+                access: 1,
+                object: "tictactoe",
+                action: "sendQuery",
+                query: "playAgain",
+                value: 0
+            };
+            sendAjax(playAgain, "sendQuery");
+        }
         $.ajax({
             type: "POST",
             url: "http://tictactoe.develop/ajax.php",

@@ -24,7 +24,7 @@ class time {
         if($this->_blitz){
             return time();
         }
-        return time() + $timeLeft;
+        return time() + (int)$timeLeft;
     }
     
     // время оставшееся на ход, которое будет показано пользователю (секунды)

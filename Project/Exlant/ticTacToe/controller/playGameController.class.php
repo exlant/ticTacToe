@@ -11,6 +11,7 @@ class playGameController extends playGameModel
         parent::__construct(new playGameDataMongoDB($roomParam['creater'], $login), $roomParam);
         $this->systemProcess($login);               // методы без взаимодействия с пользователем
         $this->userAction($login);            // взаимодействие с пользователем      
+        //$this->checkQuery($login);
     }
     
     private function systemProcess($login)
@@ -28,6 +29,7 @@ class playGameController extends playGameModel
             
             //$this->timer();
         }
+        
         
     }
     

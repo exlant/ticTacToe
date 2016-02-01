@@ -73,8 +73,7 @@ class playGameDataMongoDB extends mongoDB
     //
     public function setMoveBack($queries, $gameArrayPuth)
     {
-        $this->setQuery($queries, 0)
-             ->setUpdate('warnings', '$pop', 1)
+        $this->setUpdate('warnings', '$pop', 1)
              ->setUpdate('movies', '$pop', 1)
              ->setUpdate($gameArrayPuth, '$set', 'empty')
              ->setUpdate('change', '$inc', 1)
@@ -146,7 +145,7 @@ class playGameDataMongoDB extends mongoDB
         return $this;
     }
     
-    public function setAddPlaer($player)
+    public function setAddPlayer($player)
     {
         $this->setUpdate('players.'.$this->getLogin(), '$set', $player);
         return $this;
@@ -218,9 +217,9 @@ class playGameDataMongoDB extends mongoDB
         return $this;
     }
     
-    public function updateQuery($query)
+    public function updateQuery($query, $key, $value)
     {
-        $this->setUpdate('queries.'.$query.'.'.$this->getLogin(), '$set', 1);
+        $this->setUpdate('queries.'.$query.'.'.$key, '$set', $value);
         
         return $this;
     }
@@ -240,5 +239,31 @@ class playGameDataMongoDB extends mongoDB
         $this->setUpdate('queries', '$set', $newQueries);
              
         return $this;
+    }
+    
+    public function  recordPlayedGame($room)
+    {
+        $this->setCollection('gamePlayed')
+             ->insert($room);
+        $this->setCollection(self::collection);
+        return $this;
+    }
+    
+    public function startNewGame($players, $startMoveFigure, $gameAray, $queries)
+    {
+        $this->setFindForOutPlayer()
+             ->setQuery($queries, 0)
+             ->setUpdate('change', '$set', 0)
+             ->setUpdate('status', '$set', 'start')
+             ->setUpdate('winner', '$set', null)
+             ->setUpdate('winnerRow', '$set', array())
+             ->setUpdate('timeStart', '$set', time())
+             ->setUpdate('timeEnd', '$set', 0)
+             ->setUpdate('warnings', '$set', array())
+             ->setUpdate('players', '$set', $players)
+             ->setUpdate('movies', '$set', array())
+             ->setUpdate('gameArray', '$set', $gameAray)
+             ->setUpdate('startMove', '$set', $startMoveFigure)
+             ->updateDB();
     }
 }

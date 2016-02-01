@@ -39,7 +39,6 @@ form input[type="text"], form input[type="password"]
 div.captcha
 {
     height: 52px;
-    //border: 1px solid black;
     padding: 0px;
     margin-bottom: 5px;
 }

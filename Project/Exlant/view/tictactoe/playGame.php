@@ -46,11 +46,11 @@ $newplayers = array_merge($players, $roomParams['freePlace']);
                 <li>Победитель - <?= ($winner) ? $winner : '' ?>
             </ul>    
         </div>
-        <?= view::viewRoomsUsers($newplayers, $viewers, $roomParams['points'], $login) ?>
+        <?= view::viewRoomsUsers($newplayers, $viewers, $roomParams['points'], $login, $roomParams['status']) ?>
     </div><!-- 
  -->
     <?php
-    var_dump($roomParams['warnings']);
+    var_dump($roomParams);
     if($roomParams['type'] === '3d'){
         echo '<div class="type3d">';
         foreach($gameArray as $sideZ => $valueZ){

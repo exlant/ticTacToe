@@ -26,7 +26,6 @@ form div.creatingForm
 {
     padding-top: 15px;
     margin-left: 140px;
-    //margin-bottom: 20px;
     border: 1px solid black;
     border-bottom: none;
     border-top: none;
@@ -36,7 +35,6 @@ form div.creatingForm
 form div.formFild{
     margin-left: 10px;
     height: 40px;
-    //border: 1px solid black;
 }
 
 form div.inputName 

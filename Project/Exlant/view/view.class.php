@@ -113,20 +113,35 @@ class view
         return $str;
     }
     // игроки и зрители комнаты для игры в крестики нолики
-    static public function viewRoomsUsers($players, $viewers, $point, $login)
+    static public function viewRoomsUsers($players, $viewers, $point, $login, $gameStatus)
     {
+        $buttonsPlayAgain = '';
+        if($gameStatus === 'end' and isset($players[$login])){
+            $buttonsPlayAgain = '<div class="playAgain">'
+                            . '<div class="title">'
+                                . 'Сыграть еще раз?'
+                            . '</div>'
+                            . '<div class="button" id="buttonYes">'
+                                . 'Да'
+                            . '</div>'
+                            . '<div class="button" id="buttonNo">'
+                                . 'Нет'
+                            . '</div>'
+                    . '</div>';           
+        }
         $output = '<div class="wrapperUsers">';
         if($players) {
             $output .= '<div class="players">
                 <div class="title">
                     Игроки
-                </div>
-                <ul>';
+                </div>'
+                .$buttonsPlayAgain
+                .'<ul>';
             foreach($players as $player){
                 if(isset($player['exit']) and $player['exit'] === 'no'){
                     $moving = ($player['move']) ? 'moving' : '';
-                    
-                    $output .= '<li class="player '.$moving.'">'
+                    $playerBackLight = ($player['playAgain'] === 1) ? 'playerBackLight' : '';
+                    $output .= '<li class="player '.$moving.' '.$playerBackLight.'">'
                         .self::reduceLength($player['name'], 11).' | '
                         . '<img class="fieldFigure" src="'.DOMEN.self::$_imgUrl.$player['figure'].'.gif">'
                         .' | '

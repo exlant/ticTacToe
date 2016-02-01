@@ -142,7 +142,7 @@ class ajax extends mongoDB
             $players = startCore::$objects['playGame']->getPlayers();           // массив с игроками
             $newplayers = array_merge($players, $roomParams['freePlace']);
             $data['field'] = view::field2d($login, $gameArray, $lastMove, $movingPlayer, $warnings, $winnerSide);
-            $data['users'] = view::viewRoomsUsers($newplayers, $viewers, $roomParams['points'], $login);
+            $data['users'] = view::viewRoomsUsers($newplayers, $viewers, $roomParams['points'], $login, $roomParams['status']);
             $data['change'] = $roomParams['change'];
         }
         
