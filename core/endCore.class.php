@@ -12,8 +12,6 @@ class endCore extends errorHandlerCore{
             $line = $error['line'];
             $this->setError($code,$errstr,$file,$line);
         }
-        //var_dump(mongoDB::getQueryStatistics());
-           
     }    
     
 }

@@ -164,11 +164,6 @@ class ticTacToeFoursquare
                         'gorizontal', 'minus');
             }
         }
-        
-        //$mongo = new mongoDB();
-        //$mongo->testCollection($this->_stack);
-        //var_dump($this->_stack);
-        
         return $this;
     }//end executing
     
@@ -228,7 +223,6 @@ class ticTacToeFoursquare
             }
         }
         }
-        //var_dump($this->warnings);
     }
     
     public function getWarnings()

@@ -321,7 +321,6 @@ class playGameModel
         }
         // удаляется прерванные предупреждения отдельным запросом
         // Cannot update '' at the same time
-        //var_dump($this->_Data->getUpdate());
         $this->_Data->delateWarnings();
         $this->_Data->setWarnings($this->_chekGameArray->getWarnings());
         

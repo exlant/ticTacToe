@@ -14,7 +14,6 @@ $gameArray = startCore::$objects['playGame']->getGameArray();       // игро�
 $warnings = startCore::$objects['playGame']->getWarnings();
 $lastMove = startCore::$objects['playGame']->getLastMove();
 $newplayers = array_merge($players, $roomParams['freePlace']);
-//var_dump(phpinfo());
 ?>
 <script type="text/javascript">
     var change = <?=$roomParams['change']?>;
@@ -49,7 +48,6 @@ $newplayers = array_merge($players, $roomParams['freePlace']);
     </div><!-- 
  -->
     <?php
-    var_dump($roomParams);
     if($roomParams['type'] === '3d'){
         echo '<div class="type3d">';
         foreach($gameArray as $sideZ => $valueZ){

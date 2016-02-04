@@ -103,7 +103,6 @@ $(function(){
                 $("div.users div.wrapperUsers").replaceWith(msg.users);
                 change = msg.change;
             }
-            //console.log(msg.time);
             
             if(msg.time){
                 $("div.users div.wrapperUsers div.players ul li span.movingTime").text(msg.time);
@@ -215,7 +214,6 @@ $(function(){
             cache: false,
             async: true,
             success: function (msg) {
-                //console.log(msg);
                 if(typeof(func) === "function"){
                     func(msg);
                 }
