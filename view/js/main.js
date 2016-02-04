@@ -12,7 +12,7 @@ $(function(){
         var userOnline = $("div.usersOnline div.container");
         setInterval(function(){
             sendAjax(data, userOnline);
-        },60000);
+        },10000);
     }    
     updateUsersOnline();
     
@@ -23,6 +23,7 @@ $(function(){
             url: "http://tictactoe.develop/ajax.php",
             data: data,
             async: true,
+            cache: false,
             success: function(msg){
                 element.html(msg);
             }

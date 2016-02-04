@@ -30,17 +30,21 @@ class time {
     // время оставшееся на ход, которое будет показано пользователю (секунды)
     public function getPlayerTime($timeLeft, $timeShtamp, $move)
     {
+        $timeReturn = 0;
         if($this->_blitz){
             if($move){
-                return $timeLeft - (time() - $timeShtamp);
+                $timeReturn = $timeLeft - (time() - $timeShtamp);
             }else{
-                return $timeLeft;
+                $timeReturn = $timeLeft;
+            }
+        }else{
+            if($move){
+               $timeReturn = $timeShtamp - time();
+            }else{
+               $timeReturn = $timeLeft; 
             }
         }
-        if($move){
-           return $timeShtamp - time();
-        }else{
-           return $timeLeft; 
-        }
+        
+        return ($timeReturn < 0) ? 0 : $timeReturn;
     }
 }

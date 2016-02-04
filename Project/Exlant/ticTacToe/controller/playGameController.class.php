@@ -11,7 +11,6 @@ class playGameController extends playGameModel
         parent::__construct(new playGameDataMongoDB($roomParam['creater'], $login), $roomParam);
         $this->systemProcess($login);               // методы без взаимодействия с пользователем
         $this->userAction($login);            // взаимодействие с пользователем      
-        //$this->checkQuery($login);
     }
     
     private function systemProcess($login)
@@ -26,8 +25,7 @@ class playGameController extends playGameModel
                   ->setLastMove();  // последний сделанный ход
         }
         if($this->getWinner() === null){  // если победителя нет
-            
-            //$this->timer();
+            $this->timer($this->getMovingPlayer());
         }
         
         
@@ -40,35 +38,16 @@ class playGameController extends playGameModel
                 $this->takePlace(filter_input(INPUT_GET, 'property'));                
             }
             
-            if($this->getWinner() === null){
-                if(filter_input(INPUT_GET, 'action') === 'playerMove' and $this->getMovingPlayer() === $login){
-                    $this->setPlayerMove(filter_input(INPUT_GET, 'property'));
-                }
-            }
             if(filter_input(INPUT_GET, 'action')){
                 //$this->redirectToPage();
             }
         }
     }
      
-    private function timer()
+    private function timer($login)
     {
         if($this->getPlayerLeftTime() <= 0){
-            $this->setNextMovePlayer();             // передаем ход следующему игроку
-            //$this->dropUser();  // переводим текущего игрока в статус view, и записуем ему +1 в lose
-            
-            $countPlayers = 0;
-            foreach($this->getPlayers() as $val){
-                if($val['status'] === 'play'){
-                    $countPlayers++;
-                    $winner = $val['name'];     //если в массиве останется один игрок, он же будет победителем
-                }
-            }
-            if($countPlayers < 2){
-                $this->endGame($winner);
-                $this->redirectToPage();
-                exit();
-            }
+            $this->exitFromGame($login);
         }
     }
     

@@ -348,6 +348,7 @@ var validatingData = {
             url: "ajax.php",
             data: data,
             async: true,
+            cache: false,
             success: function(msg){
                 if(msg === "danied"){
                     // передаем данные, которые будут переданы в функцию, 

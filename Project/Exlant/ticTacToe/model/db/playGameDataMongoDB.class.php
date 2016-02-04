@@ -145,9 +145,10 @@ class playGameDataMongoDB extends mongoDB
         return $this;
     }
     
-    public function setAddPlayer($player)
+    public function setAddPlayer($player, $figure)
     {
         $this->setUpdate('players.'.$this->getLogin(), '$set', $player);
+        $this->setUpdate('busyFigure.'.$this->getLogin(), '$set', $figure);
         return $this;
     }
     // устанавливает изменение в комнате

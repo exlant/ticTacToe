@@ -6,14 +6,10 @@ namespace Project\Exlant\view;
 
 class view
 {
-//    static private $_abc = array(                           // алфавит
-//        'а','б','в','г','д','е','ё','ж','з','и','й','к','л','м','н','о','п','р','с','т'
-//    ); 
-    static private $_imgUrl = '/images/tictactoe/';          // путь к папке с картинками 
     static private $_abc = array(                           // алфавит
-        '0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19'
-    );   
-    
+        'а','б','в','г','д','е','ё','ж','з','и','й','к','л','м','н','о','п','р','с','т'
+    ); 
+    static private $_imgUrl = '/images/tictactoe/';          // путь к папке с картинками 
     
     private static $_figures = array(
         'cross' => 'Крестик',
@@ -145,14 +141,16 @@ class view
                         .self::reduceLength($player['name'], 11).' | '
                         . '<img class="fieldFigure" src="'.DOMEN.self::$_imgUrl.$player['figure'].'.gif">'
                         .' | '
-                        .$player['timeOut'];
+                        . '<span class="'.$moving.'Time">'
+                            .$player['timeOut']
+                        . '</span>';
                     if($point === 'yes'){
                         $output .= ' | '.$player['points'];
                     }
                 }elseif(isset($player['free']) and $player['free'] === 1){
                     $text = (isset($players[$login])) 
                             ? 'Свободное место | '
-                            : '<a id="takePlace" data-figure="'.$player['figure'].'" href="'.DOMEN.'/'.TICTACTOE.'/takePlace/'.$player['figure'].'">Зайти вместо</a> | ';
+                            : '<a id="takePlace" data-figure="'.$player['figure'].'" href="">Зайти вместо</a> | ';
                     $output .= '<li class="player">'
                                 . $text
                                 . '<img class="fieldFigure" src="'.DOMEN.self::$_imgUrl.$player['figure'].'.gif"> | '
@@ -172,7 +170,7 @@ class view
 
             foreach($viewers as $viewer){
                 if(isset($viewer['exit']) and $viewer['exit'] === 'no'){
-                    $output .= '<div class="player">'
+                    $output .= '<div class="viewer">'
                             .$viewer['name']
                         .'</div>';
                 }
@@ -196,12 +194,20 @@ class view
         }
         return '';
     }
+    // вспомагательная для field2d
+    static private function setZoom($count)
+    {
+        $fieldSize = 545;
+        $zoom = floor($fieldSize / $count);
+        return ($zoom > 50) ? 50 : $zoom;
+    }
     
     // поле 2d для игры в крестики-нолики 
     static public function field2d($login, $field, $lastMove, $movingPlayer, $warnings, $winnerSide)
     {
         $out = '<table class="type2d">';
         $countField = count($field);
+        $zoom = self::setZoom($countField+1);
         $out .= '<thead><td  class="coordination"></td>';
         for($a = 0; $a < $countField; $a++ ){
             $out .= '<td class="coordination">'.self::$_abc[$a].'</td>';
@@ -210,17 +216,17 @@ class view
         foreach($field as $sideY => $valueY){
             $out .= '<tr><td class="coordination">'.$sideY.'</td>';
             foreach($valueY as $sideX => $valueX){
-                $out .= '<td>';
+                $out .= '<td width="'.$zoom.'" height="'.$zoom.'">';
                 if($valueX !== 'empty'){
                     $backLlight = self::setBacklight(array('y' => $sideY, 'x' => $sideX), $lastMove, $warnings, $winnerSide);
                     $out .= '<img class="fieldFigure" src="'.DOMEN.self::$_imgUrl.$valueX.$backLlight.'.gif">';
                 }else{
                     if($movingPlayer === $login){
                         $out .= '<a data-sidey="'.$sideY.'" data-sidex="'.$sideX.'" href="">'
-                            . '<img class="fieldEmtyMove" src="'.DOMEN.self::$_imgUrl.'emptiness.png">'
+                            . '<img class="fieldEmtyMove" src="'.DOMEN.self::$_imgUrl.'emptiness.gif">'
                             . '</a>';                                                   
                     }else{
-                        $out .= '<img class="fieldEmty" src="'.DOMEN.self::$_imgUrl.'emptiness.png">';
+                        $out .= '<img class="fieldEmty" src="'.DOMEN.self::$_imgUrl.'emptiness.gif">';
                     }
                 }
                 $out .= '</td>';

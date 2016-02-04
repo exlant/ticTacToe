@@ -9,12 +9,40 @@ $(function(){
                 action: "exitFromGame",
                 value: this.id
             };
-            sendAjax(data, data.value);
             
+            var func = (this.id === 'outGame') ? function(msg){
+                location.href = DOMEN+'/'+TICTACTOE;
+            } : null;
+            playAgain(0);
+            sendAjax(data, func);
             return true;
         }
         
+        // запросы на moveBack and draw
         sendQuery(2, this);
+    });
+    function playAgain(value)
+    {
+        var data = {
+            access: 1,
+            object: "tictactoe",
+            action: "sendQuery",
+            query: "playAgain",
+            value: value
+        };
+        sendAjax(data);   
+    }
+    
+    $("div.centerContainer div.wrapper div.users").on("click", "#takePlace", function(e){
+        e.preventDefault();
+        var figure = $(this).data("figure");
+        var data = {
+            access: 1,
+            object: "tictactoe",
+            action: "takePlace",
+            value: figure
+        };
+        sendAjax(data);   
     });
     
     $("div.centerContainer div.wrapper div.users").on("click", "div.button", function(){
@@ -25,16 +53,12 @@ $(function(){
                 action: "exitFromGame",
                 value: "outGame"
             };
-            sendAjax(data, data.value);
-        }else if(this.id === "buttonYes"){
-            var data = {
-                access: 1,
-                object: "tictactoe",
-                action: "sendQuery",
-                query: "playAgain",
-                value: 1
+            var func = function(msg){
+                location.href = DOMEN+'/'+TICTACTOE;
             };
-            sendAjax(data, "sendQuery");
+            sendAjax(data, func);
+        }else if(this.id === "buttonYes"){
+            playAgain(1);
         }
     });
     
@@ -46,7 +70,10 @@ $(function(){
             action: "playerMove",
             value: JSON.stringify($(this).data())
             };
-        sendAjax(data, data.action);
+        var func = function(msg){
+            updateData()
+        };
+        sendAjax(data, func);
     });
         
     var stack = {
@@ -64,17 +91,46 @@ $(function(){
     
     function updateData()
     {
-        var updateInterval = (blitz === "yes") ? 1000 : 3000;
         var data = {
             access: 1,
             object: "tictactoe",
             action: "updatePlayData",
-            change: change
         };
+        var func = function(msg){
+            if(msg.field){
+                $("div.field table").replaceWith(msg.field);
+                $("div.field table").moveToCenter(20,40);
+                $("div.users div.wrapperUsers").replaceWith(msg.users);
+                change = msg.change;
+            }
+            //console.log(msg.time);
+            
+            if(msg.time){
+                $("div.users div.wrapperUsers div.players ul li span.movingTime").text(msg.time);
+            }
+            
+            var winner = $("div.centerContainer div.wrapper div.users div.roomParameters ul li span.winner");
+            if(winner !== msg.winner){
+                winner.text(msg.winner);
+            }
+            
+            
+            if(msg.queries && stack.queryDialog === 0){
+                var message = "Игрок "+msg.queries.login+", предлагает "+text[msg.queries.query];
+                stack.issetQuery = msg.queries.query;
+                createDialogWindow(message, 2);                 
+            }
+            if(msg.queries && msg.queries.value === -1){
+                    clear();
+                    stack.issetQuery = "confirm";
+                    var message = "Игрок "+msg.queries.login+", отклонил запрос '"+text[msg.queries.query]+"'";
+                    createDialogWindow(message, 1);
+            }
+        }
         setInterval(function(){
             data.change = change;
-            sendAjax(data, data.action);
-        },updateInterval);
+            sendAjax(data, func);
+        },1000);
     }
     updateData();
     
@@ -144,64 +200,24 @@ $(function(){
                 query: query,
                 value: value
             };
-            sendAjax(data, "sendQuery");
+            sendAjax(data);
         }
         stack.issetQuery = null;
     }
     
-    function sendAjax(data, type)
+    function sendAjax(data, func)
     {
-        // перед выходом ставим 0 в запросы playAgain
-        if(type === "outGame"){
-            var playAgain = {
-                access: 1,
-                object: "tictactoe",
-                action: "sendQuery",
-                query: "playAgain",
-                value: 0
-            };
-            sendAjax(playAgain, "sendQuery");
-        }
         $.ajax({
             type: "POST",
             url: "http://tictactoe.develop/ajax.php",
             data: data,
             dataType: "json",
+            cache: false,
             async: true,
             success: function (msg) {
                 //console.log(msg);
-                if(type === "updatePlayData"){
-                    if(msg.field){
-                        $("div.field table").replaceWith(msg.field);
-                        $("div.field table").moveToCenter(20,40);
-                        $("div.users div.wrapperUsers").replaceWith(msg.users);
-                        change = msg.change;
-                    }
-                    if(msg.queries && stack.queryDialog === 0){
-                        var message = "Игрок "+msg.queries.login+", предлагает "+text[msg.queries.query];
-                        stack.issetQuery = msg.queries.query;
-                        createDialogWindow(message, 2);                 
-                    }
-                    if(msg.queries && msg.queries.value === -1){
-                            clear();
-                            stack.issetQuery = "confirm";
-                            var message = "Игрок "+msg.queries.login+", отклонил запрос '"+text[msg.queries.query]+"'";
-                            createDialogWindow(message, 1);
-                            return true;
-                    }
-                }
-                if(type === "outGame"){
-                    location.href = DOMEN+'/'+TICTACTOE;
-                }
-                if(type === "playerMove"){
-                    //console.log(msg);
-                    var data = {
-                        access: 1,
-                        object: "tictactoe",
-                        action: "updatePlayData",
-                        change: change
-                    };
-                    sendAjax(data, data.action);
+                if(typeof(func) === "function"){
+                    func(msg);
                 }
             }
         });

@@ -112,7 +112,7 @@ class mainModel extends mongoDB
             'sideLength' => null,       // длина стороны поля
             'winner' => null,           // победитель
             'winnerRow' => array(),     // координаты выйгравшей строки
-            'timeStart' => null,        // время начала, временная метка 
+            'timeStart' => time(),        // время начала, временная метка 
             'timeEnd' => null,          // время конца
             'figureInArow' => null,     // количество фигур в ряд для победы
             'points'    => null,        // игра на очки
@@ -286,10 +286,10 @@ class mainModel extends mongoDB
     private function createQueriesArray($players)
     {
         $queries = array(
+            'confirm',
             'moveBack',
             'draw',
             'playAgain',
-            'confirm',
         );
         $new = array();
         foreach($queries as $query){
@@ -334,7 +334,9 @@ class mainModel extends mongoDB
                 
             );       
         $viewers = array('name' => $login, 'status' => 'view', 'exit' => 'no');
-        $update = array('$set' => array('players.'.$login => $viewers));
+        $update = array(
+            '$set' => array('players.'.$login => $viewers),
+            '$inc' => array('change' => 1));
         $this->getCollection()
              ->update($find, $update);
     }

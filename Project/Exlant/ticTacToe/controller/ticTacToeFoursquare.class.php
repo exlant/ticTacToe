@@ -1,5 +1,6 @@
 <?php
 namespace Project\Exlant\ticTacToe\controller;
+use core\db\mongoDB;
 class ticTacToeFoursquare
 {
     const minFoursquareLength = 3;  // минимальная длина стороны поля 
@@ -65,7 +66,7 @@ class ticTacToeFoursquare
         if($cell === 'notExist'){
             $this->_stack[$stringName][$direction]['obstacle'] = 1;
             // если предыдущая клетка не пуста, то прибавляем границе +1
-            if($this->getLastMove($stringName, $direction) !== 'empty'){
+            if($this->getLastMove($stringName, $direction, 'value', 1) !== 'empty'){
                 $this->_stack[$stringName]['border']++;
             }        
             return true;
@@ -164,6 +165,8 @@ class ticTacToeFoursquare
             }
         }
         
+        //$mongo = new mongoDB();
+        //$mongo->testCollection($this->_stack);
         //var_dump($this->_stack);
         
         return $this;
@@ -171,6 +174,7 @@ class ticTacToeFoursquare
     
     private function setWarnings()
     {
+        if($this->getRowLength() > 3){
         foreach($this->_stack as $key => $val){
             $warnings = array();
             if($this->getRowLength() === count($val['warnings'])
@@ -179,24 +183,6 @@ class ticTacToeFoursquare
                 $warnings['movies'] = $val['warnings'];
                 // нужно занять все доступные клетки, что бы снять угрозу
                 $warnings['add'] = 'all';
-                $this->warnings[] = $warnings;
-                continue;
-            }
-            
-            if($this->getRowLength() - 2 === count($val['inArow'])
-                    and $val['border'] === 0){
-                $warnings['availableCell'] = $val['emptyBorder'];
-                $warnings['movies'] = $val['inArow'];
-                $this->warnings[] = $warnings;
-                continue;
-            }
-            
-            if($this->getRowLength() - 2 === count($val['warnings']) 
-                    and $val['border'] === 0 
-                    and count($val['emptyInArow']) < 2
-                    and $this->getRowLength() > 3){
-                $warnings['availableCell'] = array_merge($val['emptyBorder'], $val['emptyInArow']);
-                $warnings['movies'] = $val['warnings'];
                 $this->warnings[] = $warnings;
                 continue;
             }
@@ -222,6 +208,25 @@ class ticTacToeFoursquare
                 $this->warnings[] = $warnings;
                 
             }
+            if($this->getRowLength() > 4){
+                if($this->getRowLength() - 2 === count($val['inArow'])
+                        and $val['border'] === 0){
+                    $warnings['availableCell'] = $val['emptyBorder'];
+                    $warnings['movies'] = $val['inArow'];
+                    $this->warnings[] = $warnings;
+                    continue;
+                }
+                if($this->getRowLength() - 2 === count($val['warnings']) 
+                        and $val['border'] === 0 
+                        and count($val['emptyInArow']) < 2
+                        and $this->getRowLength() > 3){
+                    $warnings['availableCell'] = array_merge($val['emptyBorder'], $val['emptyInArow']);
+                    $warnings['movies'] = $val['warnings'];
+                    $this->warnings[] = $warnings;
+                    continue;
+                }
+            }
+        }
         }
         //var_dump($this->warnings);
     }
@@ -344,13 +349,14 @@ class ticTacToeFoursquare
         return $this;
     }
     
-    private function getLastMove($stringName, $direction, $param = 'value')
+    // $number если не было еще записи в массив ходов, то должна быть 1, если была то 
+    private function getLastMove($stringName, $direction, $param = 'value', $number = 2)
     {
         if(empty($this->_stack[$stringName][$direction]['movies'])){
             return false;
         }
         $num = count($this->_stack[$stringName][$direction]['movies']);
-        $prev = $num - 2;
+        $prev = $num - $number;
         $cell = $this->_stack[$stringName][$direction]['movies'][$prev];
         if($param === 'value'){
             return $this->getForsquareCell($cell['y'], $cell['x']);

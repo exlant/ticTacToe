@@ -169,5 +169,12 @@ class mongoDB
             'query' => self::$queries
         );
     }
+    
+    public function testCollection($array)
+    {
+        $this->setCollection('testCollection')
+             ->insert($array);
+        return $this;
+    }
 }
 

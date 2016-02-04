@@ -1,6 +1,7 @@
 <?php
 use core\startCore;
 use Project\Exlant\view\view;
+use Project\Exlant\ticTacToe\model\mainModel;
 
 $login = startCore::$authorization->userData['nick'];               // логин данного пользователя          (string)
 $players = startCore::$objects['playGame']->getPlayers();           // массив с игроками                   (array)
@@ -17,7 +18,6 @@ $newplayers = array_merge($players, $roomParams['freePlace']);
 ?>
 <script type="text/javascript">
     var change = <?=$roomParams['change']?>;
-    var blitz = "<?=$roomParams['blitz']?>";
 </script>
 <div class="wrapper">
     <div class="field">
@@ -35,15 +35,14 @@ $newplayers = array_merge($players, $roomParams['freePlace']);
                 Параметры
             </div>
             <ul class="parameters">
-                <li>Тип поля - <?= $roomParams['type']?> 
                 <li>Длина поля - <?= $roomParams['sideLength']?> 
                 <li>Фигур в ряд - <?= $roomParams['figureInArow']?>
-                <li>Блитс - <?= $roomParams['blitz']?>
+                <li>Блитс - <?= mainModel::convertBlitz($roomParams['blitz'])['text']?>
                 <li>Время на ход - <?= $roomParams['roundTime']?>
-                <li>Игра на очки - <?= $roomParams['pointsNum']?>
+                <li>Игра на очки - <?= mainModel::convertPoints($roomParams['points'], $roomParams['pointsNum'])['text']?>
                 <li>Число игроков - <?= $roomParams['numPlayers']?>
                 <li>Создатель - <?= $roomParams['creater']?>
-                <li>Победитель - <?= ($winner) ? $winner : '' ?>
+                <li>Победитель - <span class="winner"><?= ($winner) ? $winner : '' ?></span>
             </ul>    
         </div>
         <?= view::viewRoomsUsers($newplayers, $viewers, $roomParams['points'], $login, $roomParams['status']) ?>

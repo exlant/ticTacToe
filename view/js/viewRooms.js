@@ -34,7 +34,7 @@ $(function () {
             if (playersContainer.length > 0) {
                 sendAjax(dataUsers, playersContainer);
             }
-        }, 5000);
+        }, 2000);
         // userLogin - определе в файле index.php
         // userCreater - определен в файле view.class.php метод addPlayers
         if (typeof(userCreater) !== "undefined" && userLogin === userCreater) {
@@ -64,6 +64,7 @@ $(function () {
             type: "POST",
             url: "http://tictactoe.develop/ajax.php",
             data: data,
+            cache: false,
             async: true,
             success: function (msg) {
                 if (msg === "notFound") {

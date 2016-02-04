@@ -100,6 +100,9 @@ class ajax extends mongoDB
             if($this->getActionP() === 'playerMove'){
                 $this->playerMove($login);
             }
+            if($this->getActionP() === 'takePlace'){
+                $this->takePlace($login);
+            }
         }
         if($this->getObjectP() === 'main'){
             if($this->getActionP() === 'updateUsersOnline'){
@@ -131,20 +134,25 @@ class ajax extends mongoDB
     {
         $data = array();
         new tictactoePlayGame($login);
-        $roomParams = startCore::$objects['playGame']->getRoomParam();      // параметры комнаты                    (array)
+        $roomParams = startCore::$objects['playGame']->getRoomParam();      // параметры комнаты 
+        $players = startCore::$objects['playGame']->getPlayers();           // массив с игроками                   (array)
+        $movingPlayer = startCore::$objects['playGame']->getMovingPlayer(); // игрок, который сейчас ходит (login) (string)
+        $winner = startCore::$objects['playGame']->getWinner();
         if($roomParams['change'] !== $this->getChange()){
             $lastMove = startCore::$objects['playGame']->getLastMove();           // последний ход                   (array)
             $viewers = startCore::$objects['playGame']->getViewers();           // массив со зрителями                 (array)
-            $movingPlayer = startCore::$objects['playGame']->getMovingPlayer(); // игрок, который сейчас ходит (login) (string)
             $warnings = startCore::$objects['playGame']->getWarnings();         // массив с предупреждениями
             $winnerSide = startCore::$objects['playGame']->getWinnerRow();
             $gameArray = startCore::$objects['playGame']->getGameArray();       // игровое поле                         (array)
-            $players = startCore::$objects['playGame']->getPlayers();           // массив с игроками
             $newplayers = array_merge($players, $roomParams['freePlace']);
             $data['field'] = view::field2d($login, $gameArray, $lastMove, $movingPlayer, $warnings, $winnerSide);
             $data['users'] = view::viewRoomsUsers($newplayers, $viewers, $roomParams['points'], $login, $roomParams['status']);
             $data['change'] = $roomParams['change'];
         }
+        if($roomParams['status'] === 'start'){
+            $data['time'] = $players[$movingPlayer]['timeOut'];
+        }
+        $data['winner'] = ($winner) ? $winner : '';
         
         $data['queries'] = startCore::$objects['playGame']->checkQuery($login); // запросы
         echo json_encode($data);
@@ -166,6 +174,12 @@ class ajax extends mongoDB
             'x' =>(int)$object->sidex
         ));
         echo true;
+    }
+    
+    private function takePlace($login)
+    {
+        new tictactoePlayGame($login);
+        startCore::$objects['playGame']->takePlace($this->getValue());
     }
 
     // обновление пользователей онлайн
