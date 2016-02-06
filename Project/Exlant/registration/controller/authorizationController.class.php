@@ -115,8 +115,8 @@ class authorizationController extends mainController
         
         $hash = $this->generateString(); // генерируем хеш
         //записуем хеш в куки
-        setcookie('hash', $hash, time()+3600*24*30,'/'); 
-        setcookie('string', $userId, time()+3600*24*30,'/');
+        setcookie('hash', $hash, time()+3600*24*30,'/', JUSTDOMEN); 
+        setcookie('string', $userId, time()+3600*24*30,'/', JUSTDOMEN);
         //записуем хеш в базу данных
         $this->model->setHash($hash);
         return $this;
@@ -124,8 +124,8 @@ class authorizationController extends mainController
     public function out($userId)
     {
         // удаляем куки с ид и хешем
-        setcookie('hash','',0,'/');
-        setcookie('string','',0,'/');
+        setcookie('hash','',0,'/', JUSTDOMEN);
+        setcookie('string','',0,'/', JUSTDOMEN);
         $this->model->setFind('_id', new \MongoId($userId));
         //удаляем хеш из базы
         $this->model->setHash();

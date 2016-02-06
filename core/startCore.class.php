@@ -25,11 +25,10 @@ class startCore
             self::$start++; //повышаем счетчик +1
             //запускаем функцию ob_start
             ob_start(array('core\startCore','method_call'));
-            
-            //запускаем сессию
-            session_start();
             // проверяем включены ли cookie
             $this->checkCookie();
+            //запускаем сессию
+            session_start();
             //выставляем кодировку utf8
             header('Content-Type: text/html; charset=utf-8');
             //отключаем кеширование
@@ -60,7 +59,7 @@ class startCore
     private function checkCookie()
     {
         if(filter_input(INPUT_GET, 'cookie') === 'check'){
-            if(filter_input(INPUT_COOKIE, 'PHPSESSID')){
+            if(filter_input(INPUT_COOKIE, 'testCookie') == 1){
                 header('Location: '.DOMEN);
             }else{
                 echo 'Для работы сайта включите cookie!';
@@ -68,7 +67,7 @@ class startCore
             }          
         }
         if(!filter_input(INPUT_COOKIE, 'PHPSESSID')){
-            session_start();
+            setcookie('testCookie', '1', time()+60, '/', JUSTDOMEN);
             header('Location: '.DOMEN.'?cookie=check');  
         }
     }
