@@ -1,8 +1,5 @@
 <?php
-
 namespace Project\Exlant\view;
-
-
 
 class view
 {
@@ -21,14 +18,7 @@ class view
     // список игроков в определенной комнате
     static public function addPlayers($playersInput, $freeFigures, $currentUserLogin, $action)
     {
-        //список игроков
         $playersOutput = '';
-        if($action === 'creater'){
-            $playersOutput .= '<script type="text/javascript">'
-                            .'var userCreater = "'.$currentUserLogin.'";'
-                            .'var tictactoeAddPlayer = 1;'
-                            .'</script>';
-        }
         foreach($playersInput as $value){ //массив с игроками, которые находятся в комнате
             $figure = self::$_figures[$value['figure']];
             if($currentUserLogin === $value['name']){       // если пользователь совпал с игроком со списка 
@@ -50,8 +40,7 @@ class view
                 }
             }
             //создание переменной с фигурой конец
-            $ready = ($value['figure'] !== 'none') ? 'ok' : 'none';
-            $playersOutput .= '<div class="player" data-ready="'.$ready.'">'
+            $playersOutput .= '<div class="player">'
                     . '<div class="name">'.self::reduceLength($value['name'], 11).'</div>'
                     . '<div class="figure">'.$figure.'</div>';
             if($action === 'creater' and $currentUserLogin !== $value['name']){ //если это создатель комнаты, то создаем ссылки для удаления игроков из данной комнаты

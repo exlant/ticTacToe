@@ -24,9 +24,6 @@ use Project\Exlant\view\view;
     $user = startCore::$authorization->userData;
     $userStat = (isset($user['statistics']['entire'])) ? $user['statistics']['entire'] : null;
 ?>
-        <script type="text/javascript">
-            var userLogin = "<?=$user['nick'] ?>";
-        </script>
     <div class="mainWrapper">
     <div class="leftContainer">
         <div class="autorizationPanel">
@@ -61,31 +58,6 @@ use Project\Exlant\view\view;
             }
         ?>
     </div>
-    <?php
-//    if(isset(startCore::$objects['ticTacToe'])){
-//    $userBusyInfo = (startCore::$objects['ticTacToe']->getUserBusyInfo() !== null)
-//           ? $errorHandler->viewStruct(startCore::$objects['ticTacToe']->getUserBusyInfo())
-//           : 'user busy info danied';
-//    $getSomeThing = (startCore::$objects['ticTacToe']->getSomeThing('rooms') !== null)
-//            ? $errorHandler->viewStruct(startCore::$objects['ticTacToe']->getSomeThing('rooms'))
-//            : 'Rooms not defined';
-//    }else{
-//        $userBusyInfo = 'tictactoe not exist';
-//        $getSomeThing = $userBusyInfo;
-//    }
-//    $userData = (isset(startCore::$authorization->userData))
-//            ? $errorHandler->viewStruct(startCore::$authorization->userData)
-//            : 'User data not defined';
-//    
-//    echo '<table border="1" >'
-//        . '<tr><th>UserBusyInfo</th><th>getSomeThing(rooms)</th><th>userData</th></tr>'
-//        . '<tr style="vertical-align:top">';
-//        echo '<td>'.$userBusyInfo.'</td>';
-//        echo '<td>'.$getSomeThing.'</td>';
-//        echo '<td>'.$userData.'</td>';
-//        echo '</tr>'
-//        . '</table>';
-    ?>
     </div> <!--main wrapper-->
 <?php
     }elseif(startCore::$authorization->getAccessLvl() === 'manager'){

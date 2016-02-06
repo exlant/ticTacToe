@@ -22,7 +22,7 @@ class spl_autoload   // класс автозагрузки классов по 
     {             
         $class_name = str_replace('\\','/',$class_name);	
 	$stack = explode(DOMEN_PATCH,__DIR__);        // создаем абсоютный путь к папке с сайтом, константа DOMEN_PATCH содержит название папки с сайтом 
-	$patch = $stack[0].DOMEN_PATCH.DIRECTORY_SEPARATOR.$class_name.'.class.php'; // склеиваем путь к файлу!
+	$patch = $stack[0].DOMEN_PATCH.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.$class_name.'.class.php'; // склеиваем путь к файлу!
         return $patch;
     }
 }

@@ -1,4 +1,13 @@
 $(function () {
+    var stack = {
+        roomsHash: '',
+        addPlayersHash: '',
+        roomTitle: '',
+    };
+    var playersContainer = $("div.roomAddPlayers div.playersContainer");
+    var roomsContainer = $("table.viewRoom tbody");
+    var roomTitle = $("div.roomAddPlayers div.title");
+    
     $("table.viewRoom").on("click", "tbody tr", function () {
         var href = $(this).find("td#enterRoom a").attr("href");
         if (href) {
@@ -16,68 +25,61 @@ $(function () {
     
     function updatePage()
     {
-        var dataUsers = {
+        var data = {
             access: 1,
             object: "tictactoe",
-            action: "updateAddUsers"
+            action: "updateRoomsPage"
         };
-        var dataRooms = {
-            access: 1,
-            object: "tictactoe",
-            action: "updateRooms"
-        };
-
-        var playersContainer = $("div.roomAddPlayers div.playersContainer");
-        var roomsContainer = $("table.viewRoom tbody");
+        
         setInterval(function () {
-            sendAjax(dataRooms, roomsContainer);
-            if (playersContainer.length > 0) {
-                sendAjax(dataUsers, playersContainer);
-            }
+            sendAjax(data);
         }, 2000);
-        // userLogin - определе в файле index.php
-        // userCreater - определен в файле view.class.php метод addPlayers
-        if (typeof(userCreater) !== "undefined" && userLogin === userCreater) {
-            var roomTitle = $("div.roomAddPlayers div.title");
-            var numPlayed = parseInt($("div.roomAddPlayers div#numPlayers").html());
-            setInterval(function () {
-                var numReady = 0;
-                $("div.roomAddPlayers div.playersContainer div.player").each(function(){
-                    if($(this).data("ready") === "ok"){
-                        numReady++;
-                    }
-                });
-                if (numReady === numPlayed) {
-                    roomTitle.html("Вы создали комнату! <a href='" + DOMEN + "/" + TICTACTOE + "/dropRoom'>Удалить комнату</a> | <a href='" + DOMEN + "/" + TICTACTOE + "/startGame'>Начать</a>");
-                } else {
-                    roomTitle.html("Вы создали комнату! <a href='" + DOMEN + "/" + TICTACTOE + "/dropRoom'>Удалить комнату</a>");
-                }
-            }, 1000);
-        }
-
     }
     updatePage();
 
-    function sendAjax(data, element)
+    function sendAjax(data)
     {
         $.ajax({
             type: "POST",
-            url: "http://tictactoe.develop/ajax.php",
+            dataType: "json",
+            url: DOMEN+"/ajax.php",
             data: data,
             cache: false,
             async: true,
             success: function (msg) {
-                if (msg === "notFound") {
-                    element.parent().remove();
+                if(stack.roomsHash !== msg.roomsHash){
+                    stack.roomsHash = msg.roomsHash;
+                    roomsContainer.html(msg.rooms);
+                }
+                if(msg.addPlayers){
+                    if(stack.addPlayersHash !== msg.addPlayersHash){
+                        stack.addPlayersHash = msg.addPlayersHash;
+                        playersContainer.html(msg.addPlayers);
+                    }
+                    if(msg.status === "starting"){
+                        window.document.location.reload();
+                    }
+                    
+                    if(msg.readyTogo === "ok" && stack.roomTitle !== "ok"){
+                        stack.roomTitle = "ok" 
+                        roomTitle.html(
+                            "Вы создали комнату!"
+                          +" <a href='" + DOMEN + "/" + TICTACTOE + "/dropRoom'>Удалить комнату</a>"
+                          +" | <a href='" + DOMEN + "/" + TICTACTOE + "/startGame'>Начать</a>");
+                    }else if(msg.readyTogo === "none" && stack.roomTitle !== "none"){
+                        stack.roomTitle = "none" 
+                        roomTitle.html(
+                            "Вы создали комнату!"
+                           +" <a href='" + DOMEN + "/" + TICTACTOE + "/dropRoom'>Удалить комнату</a>");
+                    }
                     return true;
                 }
-                if(msg === "starting"){
-                    window.document.location.reload();
+                if(stack.addPlayersHash){
+                    stack.addPlayersHash = '';
+                    playersContainer.parent().remove();
                     return true;
                 }
-                element.html(msg);
-                
-                
+                    
             }
         });
     }

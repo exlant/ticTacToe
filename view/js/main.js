@@ -20,7 +20,7 @@ $(function(){
     {
         $.ajax({
             type: "POST",
-            url: "http://tictactoe.develop/ajax.php",
+            url: DOMEN+"/ajax.php",
             data: data,
             async: true,
             cache: false,

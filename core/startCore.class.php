@@ -25,10 +25,11 @@ class startCore
             self::$start++; //повышаем счетчик +1
             //запускаем функцию ob_start
             ob_start(array('core\startCore','method_call'));
-            // проверяем включены ли cookie
-            $this->checkCookie();
+            
             //запускаем сессию
             session_start();
+            // проверяем включены ли cookie
+            $this->checkCookie();
             //выставляем кодировку utf8
             header('Content-Type: text/html; charset=utf-8');
             //отключаем кеширование

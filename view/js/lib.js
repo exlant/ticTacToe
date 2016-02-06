@@ -79,7 +79,7 @@ $.expr[':'].regex = function(elem, index, match) {
 
 })(jQuery);
 
-var DOMEN = "http://tictactoe.develop";
+var DOMEN = "http://www.tictactoe.pp.ua";
 var TICTACTOE =  "tictactoe";
 
 var minPass = 6; // минимальный пароль
@@ -345,7 +345,7 @@ var validatingData = {
         async.status("start");
         $.ajax({
             type: "POST",
-            url: "ajax.php",
+            url: DOMEN+"/ajax.php",
             data: data,
             async: true,
             cache: false,

@@ -8,8 +8,6 @@ use Project\Exlant\ticTacToe\controller\mainController as tictactoePlayGame;
 
 class ajax extends mongoDB
 {
-    const VIEWPATH = './Project/Exlant/view/view.class.php';
-    const VIEWCLASSNAME = 'Project\Exlant\view\view';
     private $_idC = null;  // id переданная через cookie
     private $_hashC = null;// хеш переданный через cookie
     private $_actionP = null; // выплняемое действие
@@ -77,12 +75,8 @@ class ajax extends mongoDB
     private function userFunction($login)
     {
         if($this->getObjectP() === 'tictactoe'){
-            if($this->getActionP() === 'updateAddUsers'){
-                $this->updateAddUsers($login);
-            }
-            
-            if($this->getActionP() === 'updateRooms'){
-                $this->updateRooms($login);
+            if($this->getActionP() === 'updateRoomsPage'){
+                $this->updateRoomsPage($login);
             }
             
             if($this->getActionP() === 'updatePlayData'){
@@ -187,6 +181,7 @@ class ajax extends mongoDB
     {
         $find = array('online' => 1);
         $needle = array('nick');
+        $data = array();
         $cursor = $this->getCollection()
                           ->find($find, $needle);
         foreach($cursor as $value){
@@ -194,35 +189,28 @@ class ajax extends mongoDB
         }
         echo view::usersOnline($data);
     }
-    // обновление созданной комнаты в режиме ожидания других игроков
-    private function updateAddUsers($login)
-    {
-        $find = array('players.'.$login.'.exit' => 'no',
-            'status' => array('$in' => array('created', 'start')));
-        $needle = array('players', 'freeFigure', 'creater', 'status');
-        $res = $this->setCollection('rooms')
-             ->findOne($find, $needle);
-        
-        if(!$res){
-            exit('notFound');
-        }
-        if($res['status'] === 'start'){
-            exit('starting');
-        }
-        $action = ($res['creater'] === $login) ? 'creater' : 'user';
-        require_once self::VIEWPATH;
-        echo Project\Exlant\view\view::addPlayers(
-                $res['players'],
-                $res['freeFigure'],
-                $login,
-                $action);               
-    }
-    // обновляет список созданных комнат
-    private function updateRooms($login)
+    // обновление комнат и созданние комнаты в режиме ожидания других игроков
+    private function updateRoomsPage($login)
     {
         $tictactoe = new tictactoePlayGame($login);
-        $rooms = $tictactoe->getSingleRooms();
-        echo view::viewRooms($rooms);  
+        $data = array();
+        $userBusyInfo = $tictactoe->getUserBusyInfo();
+        $data['rooms'] = view::viewRooms($tictactoe->getSingleRooms());
+        $data['roomsHash'] = md5($data['rooms']);
+        if($userBusyInfo['roomStatus'] === 'created'){
+            $data['addPlayers'] = view::addPlayers(
+                    $userBusyInfo['players'],
+                    $userBusyInfo['freeFigure'],
+                    $login,
+                    $userBusyInfo['action']);
+            $data['addPlayersHash'] = md5($data['addPlayers']);
+            $data['status'] = $userBusyInfo['roomStatus'];
+            
+            $data['readyTogo'] = ($userBusyInfo['creater'] === $login) 
+                    ? $userBusyInfo['readyToGo']
+                    : 'notCreater';  
+        }
+        echo json_encode($data);           
     }
     // запросы на ход назад, ничью, сдаться, 
     private function sendQuery($login)

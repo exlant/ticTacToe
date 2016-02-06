@@ -1,5 +1,5 @@
 <?php
-require_once '/home/exlant/www/tictactoe/core/db/mongoDB.class.php';
+require_once '/var/www/tictactoe.pp.ua/public/core/db/mongoDB.class.php';
 use core\db\mongoDB;
 
 class autoRemove
@@ -44,7 +44,7 @@ class autoRemove
     {
         $find = array(
             'status' => array(
-                '$in' => array('end', 'creating')
+                '$ne' => array('start')
                 )
             );
         return $this->_Data
