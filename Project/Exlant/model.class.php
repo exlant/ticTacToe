@@ -31,5 +31,12 @@ class model
         $pageParams = $this->getData()->getPages($path);
         startCore::setObject('pageParams', $pageParams);        
     }
+    
+    protected function getGuestCounter()
+    {
+        $counter = $this->getData()->getGuestCounter();
+        $this->getData()->iterateGuestCounter();
+        return $counter;
+    }
 }
 

@@ -208,7 +208,7 @@ $(function(){
     {
         $.ajax({
             type: "POST",
-            url: DOMEN+"/ajax.php",
+            url: "/ajax.php",
             data: data,
             dataType: "json",
             cache: false,

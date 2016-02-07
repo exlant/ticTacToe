@@ -16,20 +16,20 @@ class controller extends model
     private $_password = null;  // пароль
     private $_passTest  = null; // проверка пароля
     private $_mail = null;       // почта
-    private $_type = null;       // регистрация/авторизация
+    private $_type = null;       // регистрация/авторизация/зайти как гость
+    public $quickMessage = null;
     
     public function __construct()
     {
         parent::__construct();
-        startCore::setJS('jquery-1.11.3.js');
-        startCore::setJS('lib.js');
-        startCore::setCSS('main.css');
         $this->setGPS(); // устанавливаем get, post, session переменные
         $this->methodGet();
         if($this->getServerRequestMethod() === 'POST'){
             $this->authorization();
         }
-        
+        startCore::setJS('jquery-1.11.3.js');
+        startCore::setJS('lib.js');
+        startCore::setCSS('main.css');
         if(startCore::$authorization->userID){ //если пользователь зарегистрирован
             $this->accessAlloed();
         }else{ //если пользователь не зарегистрирован
@@ -42,9 +42,9 @@ class controller extends model
                 $this->setPageParams("manager");
             }else{
                 $this->setPageParams("main");
-            }
-            
-        }       
+            }           
+        }
+        
     }
     
     private function authorization() //авторизация
@@ -53,11 +53,17 @@ class controller extends model
             return false;
         }
         if($this->getType() === 'registration'){
-            new registrationController($_POST['nick'],$_POST['password'],$_POST['passTest'],$_POST['mail']);
+            $registration = new registrationController($_POST['nick'],$_POST['password'],$_POST['passTest'],$_POST['mail']);
+            $this->quickMessage = $registration->quickMessage;
         }
         if($this->getType() === 'authorization'){
             startCore::$authorization->setAuthorization($_POST['nick'],$_POST['password']);
-        } 
+        }
+        if($this->getType() === 'guest'){
+            $guestCounter = $this->getGuestCounter();
+            $registration = new registrationController('guest_'.$guestCounter,'guest1','guest1','empty@empty.com');
+            $this->quickMessage = $registration->quickMessage;
+        }
     }
     
     private function accessAlloed()
@@ -104,7 +110,7 @@ class controller extends model
         $this->_captchaP = filter_input(INPUT_POST, 'captcha');
         $this->_captchaS = (isset($_SESSION['captcha']['code'])) 
                 ? $_SESSION['captcha']['code']
-                : null;
+                : 'empty';
         unset($_SESSION['captcha']['code']);
         $this->_serverRequestMethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD');
         $this->_route = filter_input(INPUT_GET, 'route');

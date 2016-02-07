@@ -7,33 +7,37 @@ use Project\Exlant\registration\model\registrationModel;
 
 class registrationController extends mainController
 {
-    //стартуем приватный метод, с входными данными:
+    public $quickMessage = null;
     //логин, пароль, почта
     public function __construct($login,
-                                $pass = null,
-                                $pass_test = null,
-                                $mail = null,
-                                $captcha = null)
+                                $pass,
+                                $pass_test,
+                                $mail
+                                )
     {
         
         //проверка логина
         if(!$this->checkLogin($login)){
             return FALSE;
         }
-
         //проверяем пароли 
         if(!$this->checkPass($pass, $pass_test)){
             return FALSE;
         }
+        
         //проверяем email
         if(!$this->checkMail($mail)){
             return FALSE;
         }
-        //если юзер не был добавлен
-        if(!$this->NewUser($login,$pass,$mail)){
+        
+        //добавляем пользователя
+        if(!$this->NewUser($login, $pass, $mail)){
             return FALSE;
         }
-        $_SESSION['quickMessage']['usserAdd'] = 'Ваш аккаунт успешно добавлен в базу данных';
+        $this->quickMessage = ($pass === 'guest1') 
+                ? 'Вы прошли проверку, и через 5 секунд будете перемещены в гостевой аккаунт!<br>'
+                . 'Или просто перезагрузите страничку!'
+                : 'Ваш аккаунт успешно добавлен в базу данных';
         header('Refresh: 5; URL='.DOMEN);
         
     }
@@ -84,10 +88,13 @@ class registrationController extends mainController
         return TRUE;
     }
     
-    private function NewUser($login,$pass,$mail) //добавляем нового пользователя
+    private function NewUser($login, $pass, $mail) //добавляем нового пользователя
     {
+        $hash = $this->generateString();
+        $pass = ($pass === 'guest1') ? $this->generateString() : $pass;
         $salt = $this->generateString(parent::D_SALT); //генерируем соль, которую запишем в бд
-        $cryptPass = $this->cryptPass($pass,$salt);    //хешируем пароль
+        $cryptPass = $this->cryptPass($pass,$salt); //хешируем пароль
+                                                 
         //масив с данными пользователя, которые запишем в бд
         $user = array(                  
             'nick' => $login,
@@ -96,11 +103,18 @@ class registrationController extends mainController
             'salt' => $salt,
             'visibility' => 1,
             'date' => time(),
+            'cookieTime'=> time(),
+            'timeOnline' => time(),
+            'online' => 1,
+            'hash' => $hash,
             'statistics' => array('entire' => array('win' => 0, 'lose' => 0, 'draw' => 0))
         );
           //добавляем нового пользователя
         $instanceRegistModel = new registrationModel();
-        if($instanceRegistModel->addUser($user)){
+        $user_id = $instanceRegistModel->addUser($user);
+        if($user_id){
+            setcookie('hash', $hash, time()+3600*24*30,'/', JUSTDOMEN); 
+            setcookie('string', $user_id, time()+3600*24*30,'/', JUSTDOMEN);
             return TRUE;
         }
         return FALSE;

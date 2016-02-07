@@ -1,7 +1,7 @@
 <?php
 use core\startCore;
 $hidden = (isset($admin) and $admin) ? "<input type='hidden' name='manager' value='manager'>" : "";
-if(filter_input(INPUT_GET, 'route') === 'registration' ){ ?>
+if(filter_input(INPUT_GET, 'route') === 'registration'){ ?>
     <div class="registration">
         <form name="registration" action="" method="post">
             <input type="hidden" name="type" value="registration">
@@ -34,14 +34,38 @@ if(filter_input(INPUT_GET, 'route') === 'registration' ){ ?>
                 <input name="send" type="submit" value="Зарегистрироваться">
                 <div class="errorHelper"><?= ($errorHandler->getUserError()) ? $errorHandler->getUserError() : ''; ?></div>
                 <div class="quickMessage"><?php  
-                    if(isset($_SESSION['quickMessage']['usserAdd'])){
-                        echo $_SESSION['quickMessage']['usserAdd'];
-                        unset($_SESSION['quickMessage']);
+                    if(startCore::$controller->quickMessage){
+                        echo startCore::$controller->quickMessage;
+                        startCore::$controller->quickMessage = null;
                     }
                 ?></div>
         </form>
     </div>
-<?php }else{ ?>
+<?php }elseif(filter_input(INPUT_GET, 'route') === 'guest'){ ?>
+    <div class="registration">
+        <form name="authorization" action="" method="post">
+            <input type="hidden" name="type" value="guest">
+            <div class="title">Введите текст c картинки</div>
+            
+            <div class="inputForm">
+                <div class="captcha">
+                    <img src="images/captcha.php?width=300">
+                </div>
+                <div class="input">
+                    <input type="text" placeholder="Введите текст с картинки" name="captcha">
+                </div>
+            </div>
+            <div id="captcha" class="helper"></div>
+            <input name="send" type="submit" value="Играть как гость">
+            <div class="quickMessage"><?php  
+                if(startCore::$controller->quickMessage){
+                    echo startCore::$controller->quickMessage;
+                    startCore::$controller->quickMessage = null;
+                }
+          ?></div>
+        </form>
+    </div>
+<?php }else{?>
 
     <div class="authorization">
         <form name="authorization" action="" method="post">
@@ -65,6 +89,9 @@ if(filter_input(INPUT_GET, 'route') === 'registration' ){ ?>
             <input name="send" type="submit" value="Войти">
             <a href="<?=DOMEN ?>/registration">
                 <div class="inputButton"><input type="button" value="Зарегистрироваться"></div>
+            </a>
+            <a href="<?=DOMEN ?>/guest">
+                <div class="inputButton"><input type="button" value="Играть как гость"></div>
             </a>
         </form>
     </div>

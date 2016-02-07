@@ -23,8 +23,10 @@ class registrationModel extends mongoDB
     {
         $this->getCollection()
                 ->insert($user);
+        
         if($user['_id']){
-            return TRUE;
+            $id = '$id';
+            return $user['_id']->$id;
         }
         return FALSE;
     }

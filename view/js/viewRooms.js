@@ -42,7 +42,7 @@ $(function () {
         $.ajax({
             type: "POST",
             dataType: "json",
-            url: DOMEN+"/ajax.php",
+            url: "/ajax.php",
             data: data,
             cache: false,
             async: true,

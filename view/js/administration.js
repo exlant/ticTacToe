@@ -430,7 +430,7 @@ $(function(){
     {
         $.ajax({
             type: "POST",
-            url: DOMEN+"/ajax.php",
+            url: "/ajax.php",
             data: data,
             async: true,
             success: function(msg){
