@@ -1,0 +1,80 @@
+div.centerContainer div.sendMessage
+{
+    border: 1px solid black;
+    text-align: center;
+}
+
+div.centerContainer div.sendMessage div.captcha div.title img
+{
+    border-radius: 3px;
+    border: 1px outset grey;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: bottom;
+    margin-bottom: 3px;
+}
+
+div.centerContainer div.sendMessage div.title
+{
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+div.centerContainer div.sendMessage div.textInput input
+{
+    width: 500px;
+    height: 40px;
+    font-size: 18px;
+    margin: 0px;
+    margin-bottom: 5px;
+    text-align: center;
+    border: 1px inset grey;
+    border-radius: 3px;
+    padding: 0px;
+    
+}
+
+
+div.centerContainer div.sendMessage div.textArea textArea
+{
+    width: 500px;
+    height: 100px;
+    border: 1px inset grey;
+    border-radius: 3px;
+    font-size: 18px;
+    padding: 0px;
+    
+}
+
+div.centerContainer div.sendMessage div.submit input
+{
+    width: 502px;
+    height: 50px;
+    font-size: 18px;
+    margin: 10px 0px 20px 0px;
+    text-align: center;
+    border: 1px outset grey;
+    border-radius: 3px;
+    padding: 0px;
+    cursor: pointer;
+    background-color: #d1e6e0;
+}
+
+form input[type="text"]::-webkit-input-placeholder       {line-height: 20px;  transition: line-height 0.5s ease;}
+form input[type="text"]::-moz-placeholder                {line-height: 20px;  transition: line-height 0.5s ease;}
+form input[type="text"]:-moz-placeholder                 {line-height: 20px;  transition: line-height 0.5s ease;}
+form input[type="text"]:-ms-input-placeholder            {line-height: 20px;  transition: line-height 0.5s ease;}
+form input[type="text"]:focus::-webkit-input-placeholder {line-height: 100px; transition: line-height 0.5s ease;}
+form input[type="text"]:focus::-moz-placeholder          {line-height: 100px; transition: line-height 0.5s ease;}
+form input[type="text"]:focus:-moz-placeholder           {line-height: 100px; transition: line-height 0.5s ease;}
+form input[type="text"]:focus:-ms-input-placeholder      {line-height: 100px; transition: line-height 0.5s ease;}
+
+div.centerContainer div.sendMessage div.submit input:hover
+{
+    background-color: #b0c3dd;
+}
+
+div.centerContainer div.sendMessage div.submit input:focus
+{
+    border: 1px inset grey;
+}

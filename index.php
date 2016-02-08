@@ -53,8 +53,14 @@ use Project\Exlant\view\view;
         </div>
     </div><div class="centerContainer">
         <?php
-            if(startCore::$controller->getRoute() === 'tictactoe'){
-                require_once VIEW.'tictactoe'.$slash.'index.php';
+            if(startCore::$controller->getRoute() === TICTACTOE){
+                require_once VIEW.TICTACTOE.$slash.'index.php';
+            }
+            if(startCore::$controller->getRoute() === USERS){
+                require_once VIEW.USERS.'.php';
+            }
+            if(startCore::$controller->getRoute() === SENDMESSAGE){
+                require_once VIEW.SENDMESSAGE.'.php';
             }
         ?>
     </div>

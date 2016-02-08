@@ -28,7 +28,7 @@ class ajax extends mongoDB
     {
         parent::__construct();
         $this->setCGPS();
-        $array = ($_GET) ? $_GET :$_POST;
+        $array = ($_GET) ? $_GET : $_POST;
         if(isset($array['login'])){
             $this->searchDublicateNick($array['login']);
             return true;

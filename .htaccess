@@ -1,6 +1,9 @@
 <Files *.php>
         Require all denied
 </Files>
+<Files *.xml>
+        Require all denied
+</Files>
 <Files ~ "^index|ajax|captcha.php$">
         Require all granted
 </Files>

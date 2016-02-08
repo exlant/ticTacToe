@@ -7,7 +7,11 @@ class spl_autoload   // класс автозагрузки классов по 
 {                         
 
     static function autoload($class_name) // метод, который запускается при создании нового объекта
-    {      
+    {   
+        // Don't interfere with other autoloaders
+        if (0 === strpos($class_name, 'Swift_')) {
+            return;
+        }
         $filename = self::loadpatch($class_name);
                 
         if(file_exists($filename)){ //если файл с классом существует инклудим его 

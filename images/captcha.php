@@ -15,13 +15,13 @@ class createCaptcha
     //длина строки с символами
     private $_lettersLen = null;
     //массив с названием переменных, которые нельзя изменить из вне
-    private $_notSetParams = array('_errors', '_src', '_cod',  '_letters', '_lettersAmount', '_lettersLen',  '_notSetParams', '_colors');
+    private $_notSetParams = array('_errors', '_src', '_code',  '_letters', '_lettersAmount', '_lettersLen',  '_notSetParams', '_colors');
     // цвета знаков каптчи
     private $_colors = array("90","110","130","150","170","190","210");
     // сгенерированная картинка
     private $_src = null;
     // код сгенерированной каптчи
-    private $_cod = null;
+    private $_code = null;
     
     public function __construct($params = array())
     {
@@ -33,7 +33,7 @@ class createCaptcha
         $this->lettersLen()    //вычесляем число символов в строке символов для генерации каптчи
              ->lettersAmount() //вычесляем количество символов каптчи
              ->createImage()   //создаем картинку
-             ->setCod()        // записуем код в сессию
+             ->setCode()        // записуем код в сессию
              ->outputImage();  // выводим готовую картинку
     }
     
@@ -46,7 +46,7 @@ class createCaptcha
                     if(is_numeric($val)){
                         $this->$key = $val;
                     }else{
-                        $this->setParams('Значение параметра <b>'.$key.'</b>, должно быть числом, а установленно - <b>'.$val.'</b>!');
+                        $this->setErrors('Значение параметра <b>'.$key.'</b>, должно быть числом, а установленно - <b>'.$val.'</b>!');
                         return false;
                     }
                     
@@ -122,7 +122,7 @@ class createCaptcha
     //записуем символы в каптчу
     private function createLetters($src)
     {
-        $cod = '';
+        $code = '';
         // сдвигаем символы на центр картинки
         $center = ($this->width - ($this->fontSize * ($this->_lettersAmount+2)))/2;
         for($i=0; $i < $this->_lettersAmount; $i++)      //то же самое для основных букв
@@ -134,18 +134,18 @@ class createCaptcha
            $size = rand($this->fontSize*2-2,$this->fontSize*2+2);
            $x = ($i+1)*$this->fontSize + rand(1,5) + $center;      //даем каждому символу случайное смещение
            $y = (($this->height*2)/3) + rand(0,5);                            
-           $cod .= $letter;                        //запоминаем код
+           $code .= $letter;                        //запоминаем код
            imagettftext($src,$size,rand(0,15),$x,$y,$color,$this->font,$letter); 
         }
-        $this->_cod = $cod;
+        $this->_code = $code;
         return $this;
     }
     
     // записуем код в сессию
-    private function setCod()
+    private function setCode()
     {
         session_start();
-        $_SESSION['captcha']['code'] = $this->_cod;
+        $_SESSION['captcha']['code'] = $this->_code;
         return $this;
     }
     

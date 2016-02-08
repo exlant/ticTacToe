@@ -5,6 +5,7 @@ use Project\Exlant\registration\controller\registrationController;
 use Project\Exlant\ticTacToe\controller\mainController as ticTacToe;
 use Project\Exlant\model;
 use Project\Exlant\administration\controllerAdmin;
+use Project\Exlant\mail\mail;
 
 class controller extends model
 {
@@ -17,7 +18,9 @@ class controller extends model
     private $_passTest  = null; // проверка пароля
     private $_mail = null;       // почта
     private $_type = null;       // регистрация/авторизация/зайти как гость
-    public $quickMessage = null;
+    public $quickMessage = null; // быстрые сообщения
+    public $messager = null;     // объект с почтой
+    
     
     public function __construct()
     {
@@ -36,30 +39,35 @@ class controller extends model
             startCore::setJS('registration.js');
             startCore::setCSS('registration.css');
             // устанавливает параметры страницы(title, keywords, description, etc)
-            if(filter_input(INPUT_GET, 'route') === 'registration'){
-                $this->setPageParams("registration");
-            }else if(filter_input(INPUT_GET, 'route') === 'manager' ){
-                $this->setPageParams("manager");
-            }else{
-                $this->setPageParams("main");
-            }           
+            $page = (filter_input(INPUT_GET, 'route')) 
+                    ? filter_input(INPUT_GET, 'route'):
+                    'main';
+            $this->setPageParams($page);      
         }
         
     }
     
     private function authorization() //авторизация
     {   
-        if(!$this->checkCaptcha()){
-            return false;
-        }
         if($this->getType() === 'registration'){
+            if(!$this->checkCaptcha()){
+                return false;
+            }
             $registration = new registrationController($_POST['nick'],$_POST['password'],$_POST['passTest'],$_POST['mail']);
             $this->quickMessage = $registration->quickMessage;
         }
         if($this->getType() === 'authorization'){
+            if(isset($_SESSION['triesAuth']) 
+                    and $_SESSION['triesAuth'] > 5 
+                    and !$this->checkCaptcha()){
+                return false;
+            }
             startCore::$authorization->setAuthorization($_POST['nick'],$_POST['password']);
         }
         if($this->getType() === 'guest'){
+            if(!$this->checkCaptcha()){
+                return false;
+            }
             $guestCounter = $this->getGuestCounter();
             $registration = new registrationController('guest_'.$guestCounter,'guest1','guest1','empty@empty.com');
             $this->quickMessage = $registration->quickMessage;
@@ -76,18 +84,46 @@ class controller extends model
             return true;
         }
         
+        if(!$this->getRoute()){
+            $this->_route = TICTACTOE;
+        }
+        
         $login = startCore::$authorization->userData['nick'];
         startCore::$authorization->setUsersOnline(); //достать из базы пользователей онлайн
 
-        if(!$this->getRoute()){
-            $this->_route = 'tictactoe';
+        if($this->getRoute() === SENDMESSAGE){
+            $this->sendMessage();
         }
+        
         // запуск объекта с игрой крестики нолики
         startCore::setJS('main.js');
         if($this->getRoute() === 'tictactoe'){
-            $this->setPageParams('tictactoe');
             startCore::setObject('ticTacToe', new ticTacToe($login));
         }
+        
+        $this->setPageParams($this->getRoute());
+    }
+    
+    private function sendMessage()
+    {
+        startCore::setCSS('sendMessage.css');
+        startCore::setJS('sendMessage.js');
+        if($this->getServerRequestMethod() === 'POST' and $this->getType() === 'sendMessage'){
+            if(!$this->checkCaptcha()){
+                return false;
+            }
+            $this->messager = new mail(
+                    filter_input(INPUT_POST, 'body'),
+                    filter_input(INPUT_POST, 'subject'),
+                    filter_input(INPUT_POST, 'mail')
+                    );
+            if($this->messager->sendMessage()){
+                $this->quickMessage = 'Сообщение отправленно!';
+            }else{
+                $this->quickMessage = 'Произошла ошибка!<br>'
+                        . 'Повторите отправку сообщения через некоторое время время!';
+            }
+        }    
     }
     
     private function outAuthorization()
@@ -110,7 +146,7 @@ class controller extends model
         $this->_captchaP = filter_input(INPUT_POST, 'captcha');
         $this->_captchaS = (isset($_SESSION['captcha']['code'])) 
                 ? $_SESSION['captcha']['code']
-                : 'empty';
+                : $this->generateString();
         unset($_SESSION['captcha']['code']);
         $this->_serverRequestMethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD');
         $this->_route = filter_input(INPUT_GET, 'route');
@@ -173,5 +209,16 @@ class controller extends model
     public function getType()
     {
         return $this->_type;
-    } 
+    }
+    
+    public function generateString($len=32) //генерируем случайную строку с заданной длиной
+    {
+        $str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPRQSTUVWXYZ0123456789';
+        $str_len = strlen($str)-1;
+        $text = '';
+        while(strlen($text)<$len){
+            $text.=$str[mt_rand (0, $str_len)];
+        }
+        return $text;
+    }
 }
