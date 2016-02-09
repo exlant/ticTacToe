@@ -156,25 +156,14 @@ $(function(){
         }
         
         var html = "<div class='dialogWindow'>"
-                       +"<div class='header'><img src='images/close.gif'></div>"
+                       +"<div class='header'>Сообщение</div>"
                        +"<div class='text'>"+text+"</div>"
                        +"<div class='buttons'>"+buttons+"</div>"
                    +"</div>";
         $("body").prepend(html);
         
         stack.divDialog = $("div.dialogWindow").moveToCenter();
-        var img = $("div.dialogWindow div.header img");
-        img.on("mouseover", function(){
-            img.attr("src", "images/close_on.gif");
-            img.css("cursor","pointer");
-        });
-        img.on("mouseout", function(){
-            img.attr("src", "images/close.gif");
-        });
-        img.on("click", function(){
-            clear();
-            sendQuery(-1);
-        });
+        
         stack.divDialog.on("click", "input", function(){
             var value = 1;
             if(this.name === "No"){

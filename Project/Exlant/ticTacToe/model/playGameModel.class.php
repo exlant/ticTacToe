@@ -17,7 +17,6 @@ class playGameModel
     private $_gameArray = array();   // массив с игровым полем                              (array)
     private $_players = array();     // массив с игроками                                   (array)
     private $_viewers = array();     // массив с зрителями                                  (array)
-    //private $_busyFigure = array();  // массив с задеянными фигурами
     private $_playerLeftTime = null; // оставшееся время игрока на ход                   (int)
     private $_movingPlayer = null; //логин игрока, который должен ходить                 (string) 
     private $_chekGameArray = null; // объект проверки поля на победителя                (object)
@@ -208,11 +207,22 @@ class playGameModel
                 $this->checkWinner();
             }
             $this->checkWarnings($move);
-            
             // записуем ход игрока в базу
             $this->_Data->updateDB();
+            $this->checkOnDraw();
         }
         
+    }
+    
+    private function checkOnDraw()
+    {
+        $length = $this->getRoomParam()['sideLength'];
+        $cellNum = $length * $length;
+        $moviesNum = count($this->getRoomParam()['movies']) + 1;
+        if($cellNum === $moviesNum){
+            $this->setDraw();
+        }
+        return;
     }
     
     private function setMoveBack()

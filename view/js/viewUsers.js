@@ -16,7 +16,7 @@ $(function(){
         }
         var helperHtml = "Некорректный логин";
         setVar(this);
-        var pattern = new RegExp(/^(?!empty|draw)[-A-z0-9_]+$/);
+        var pattern = new RegExp(/^(?!empty|draw|guest_)[-A-z0-9_]+$/);
         // проверка регуляркой
         if(!this.value.match(pattern)){
             helper.html(helperHtml);

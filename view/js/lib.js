@@ -198,7 +198,7 @@ var validatingData = {
             // итератор ошибок
             var iterator = 0;
             var text = "";
-            var pattern = new RegExp("^(?!empty|draw)[-A-z0-9_]+$");
+            var pattern = new RegExp("^(?!empty|draw|guest_)[-A-z0-9_]+$");
             // проверка регуляркой
             if(!login.val().match(pattern)){
                 text += "Допустимы латинские символы,<br>цифры (0-9), знаки \"-\", \"_\"<br>";

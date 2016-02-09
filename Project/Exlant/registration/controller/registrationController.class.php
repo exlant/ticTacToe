@@ -55,6 +55,7 @@ class registrationController extends mainController
               ->getLogin($login); //ищем добавляемый логин в базе
            
         if($countLogin){          //если логин был найден в базе, кидаем ошибку пользователя
+            
             $this->setError('reg_isset_login');
             return FALSE;
         }
@@ -107,6 +108,7 @@ class registrationController extends mainController
             'timeOnline' => time(),
             'online' => 1,
             'hash' => $hash,
+            'mailView' => 0,
             'statistics' => array('entire' => array('win' => 0, 'lose' => 0, 'draw' => 0))
         );
           //добавляем нового пользователя

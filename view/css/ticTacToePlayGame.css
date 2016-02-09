@@ -218,3 +218,48 @@ div.users div.wrapperUsers div.players ul li.playerBackLight
 {
     background-color: #c0f9b3;
 }
+
+/*dialogWindow*/
+div.dialogWindow
+{
+    font-size: 16px;
+    
+}
+
+div.dialogWindow div.header
+{
+    text-align: center;
+    padding: 10px;
+}
+
+div.dialogWindow div.text
+{
+    text-align: center;
+    padding: 15px;
+}
+
+div.dialogWindow div.buttons input[type="button"]
+{
+    padding: 2px;
+    width: 70px;
+    height: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 1px solid black;
+    border-radius: 3px;
+}
+
+div.dialogWindow div.buttons input[name="Yes"]:hover,
+div.dialogWindow div.buttons input[name="Ok"]:hover 
+{
+    border: 1px outset grey;
+    border-radius: 3px;
+    background-color: #4dd860;
+}
+
+div.dialogWindow div.buttons input[name="No"]:hover
+{
+    border: 1px outset grey;
+    border-radius: 3px;
+    background-color: red;
+}

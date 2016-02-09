@@ -16,7 +16,9 @@ class autoRemove
     public function inspectRooms()
     {
         $this->_Data->setCollection('rooms');
+       
         foreach($this->getRooms() as $room){
+             var_dump($room);
             $time = ($room['status'] === 'end') ? $room['timeEnd'] : $room['timeStart'];
             if($this->checkRoomEndTime($time) 
                     or $this->checkRoomPlayerOn($room['players'])){
@@ -44,7 +46,7 @@ class autoRemove
     {
         $find = array(
             'status' => array(
-                '$ne' => array('start')
+                '$ne' => 'start'
                 )
             );
         return $this->_Data

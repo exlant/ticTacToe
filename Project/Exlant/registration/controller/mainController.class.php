@@ -19,7 +19,7 @@ class mainController
     
     public function checkLogin($login) //метод, проверки логина через регулярку
     {
-        $pattern='/^(?!empty|draw)[-A-z0-9_]{'.self::MIN_LOGIN.','.self::MAX_LOGIN.'}$/';
+        $pattern='/^(?!empty|draw|guest_)[-A-z0-9_]{'.self::MIN_LOGIN.','.self::MAX_LOGIN.'}$/';
         if(!preg_match($pattern, $login)){
            return FALSE; 
         }  
