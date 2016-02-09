@@ -5,6 +5,7 @@ use core\startCore;
 use core\db\mongoDB;
 use Project\Exlant\view\view;
 use Project\Exlant\ticTacToe\controller\mainController as tictactoePlayGame;
+use Project\Exlant\users\usersModel;
 
 class ajax extends mongoDB
 {
@@ -22,6 +23,7 @@ class ajax extends mongoDB
     private $_accessP = null;      // если 1 значит запрос от пользователя
     private $_query = null;        // запрос пользователя на ход назад, ничью, сыграть заново
     private $_value = null;
+    private $_key = null;
     private $_change = 0;       // определяет обновились ли данные в игре
     
     public function __construct()
@@ -96,6 +98,11 @@ class ajax extends mongoDB
             }
             if($this->getActionP() === 'takePlace'){
                 $this->takePlace($login);
+            }
+        }
+        if($this->getObjectP() === 'editProfile'){
+            if($this->getActionP() === 'editData'){
+                $this->editData($login);
             }
         }
         if($this->getObjectP() === 'main'){
@@ -197,6 +204,7 @@ class ajax extends mongoDB
         $userBusyInfo = $tictactoe->getUserBusyInfo();
         $data['rooms'] = view::viewRooms($tictactoe->getSingleRooms());
         $data['roomsHash'] = md5($data['rooms']);
+        $data['status'] = $userBusyInfo['roomStatus'];
         if($userBusyInfo['roomStatus'] === 'created'){
             $data['addPlayers'] = view::addPlayers(
                     $userBusyInfo['players'],
@@ -204,8 +212,6 @@ class ajax extends mongoDB
                     $login,
                     $userBusyInfo['action']);
             $data['addPlayersHash'] = md5($data['addPlayers']);
-            $data['status'] = $userBusyInfo['roomStatus'];
-            
             $data['readyTogo'] = ($userBusyInfo['creater'] === $login) 
                     ? $userBusyInfo['readyToGo']
                     : 'notCreater';  
@@ -217,6 +223,18 @@ class ajax extends mongoDB
     {
         new tictactoePlayGame($login);
         startCore::$objects['playGame']->sendQuery($this->getQuery(), $this->getValue());
+    }
+    
+    // редактирование профиля
+    private function editData($login)
+    {
+        $model = new usersModel();
+        if(!$model->setNewData($login, $this->getKey(), $this->getValue()))
+        {
+            echo 'danied';
+            return;
+        }
+        echo 'Ok';
     }
     
     // админ. редактирует строку
@@ -305,6 +323,7 @@ class ajax extends mongoDB
         $this->_objectP = filter_input(INPUT_POST, 'object');
         $this->_elementIdP = filter_input(INPUT_POST, 'elementID');
         $this->_query = filter_input(INPUT_POST, 'query');
+        $this->_key = filter_input(INPUT_POST, 'key');
         $this->_value = filter_input(INPUT_POST, 'value');
         $this->_change = filter_input(INPUT_POST, 'change');
         $this->_cellValueP = filter_input(INPUT_POST, 'cellValue');
@@ -385,6 +404,11 @@ class ajax extends mongoDB
     private function getChange()
     {
         return (int)$this->_change;
+    }
+    
+    private function getKey()
+    {
+        return $this->_key;
     }
 }
 $ajax = new ajax();

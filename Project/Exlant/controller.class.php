@@ -6,6 +6,7 @@ use Project\Exlant\ticTacToe\controller\mainController as ticTacToe;
 use Project\Exlant\model;
 use Project\Exlant\administration\controllerAdmin;
 use Project\Exlant\mail\mail;
+use Project\Exlant\users\usersController;
 
 class controller extends model
 {
@@ -92,7 +93,11 @@ class controller extends model
         startCore::$authorization->setUsersOnline(); //достать из базы пользователей онлайн
 
         if($this->getRoute() === SENDMESSAGE){
-            $this->sendMessage();
+            $this->sendMessage($login);
+        }
+        
+        if($this->getRoute() === USERS){
+            $this->setUsersObject($login);
         }
         
         // запуск объекта с игрой крестики нолики
@@ -104,7 +109,17 @@ class controller extends model
         $this->setPageParams($this->getRoute());
     }
     
-    private function sendMessage()
+    private function setUsersObject($login)
+    {
+        startCore::setCSS('viewUsers.css');
+        startCore::setJS('viewUsers.js');
+        startCore::setObject('viewUsers', new usersController(
+                $login,
+                filter_input(INPUT_GET, 'action')
+                ));
+    }
+    
+    private function sendMessage($login)
     {
         startCore::setCSS('sendMessage.css');
         startCore::setJS('sendMessage.js');
@@ -113,16 +128,12 @@ class controller extends model
                 return false;
             }
             $this->messager = new mail(
+                    $login,
                     filter_input(INPUT_POST, 'body'),
                     filter_input(INPUT_POST, 'subject'),
                     filter_input(INPUT_POST, 'mail')
                     );
-            if($this->messager->sendMessage()){
-                $this->quickMessage = 'Сообщение отправленно!';
-            }else{
-                $this->quickMessage = 'Произошла ошибка!<br>'
-                        . 'Повторите отправку сообщения через некоторое время время!';
-            }
+            $this->messager->sendMessage();
         }    
     }
     

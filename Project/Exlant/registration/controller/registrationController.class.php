@@ -43,7 +43,7 @@ class registrationController extends mainController
     }
     
         
-    protected  function checkLogin($login) {
+    public  function checkLogin($login) {
         //переопределяем родительский метод
         if(!parent::checkLogin($login)){ //если не проходит регулярку, кидаем ошибку
             $this->setError('incorect_login');

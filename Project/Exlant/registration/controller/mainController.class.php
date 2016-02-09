@@ -17,7 +17,7 @@ class mainController
     
     public $errorNum = 0;          //колличество ошибок
     
-    protected function checkLogin($login) //метод, проверки логина через регулярку
+    public function checkLogin($login) //метод, проверки логина через регулярку
     {
         $pattern='/^(?!empty|draw)[-A-z0-9_]{'.self::MIN_LOGIN.','.self::MAX_LOGIN.'}$/';
         if(!preg_match($pattern, $login)){
@@ -26,7 +26,7 @@ class mainController
         return TRUE;  
     }
     
-    protected function lengthMin($var,$minL) //проверка строки на минимально разрешенную длину
+    public function lengthMin($var,$minL) //проверка строки на минимально разрешенную длину
     {
         if(strlen(trim($var))<$minL){
             return FALSE;
@@ -34,7 +34,7 @@ class mainController
         return TRUE;
     }
     
-    protected function lengthMax($var,$maxL)//проверка строки на максимально разрешенную длину
+    public function lengthMax($var,$maxL)//проверка строки на максимально разрешенную длину
     {
         if(strlen(trim($var))>$maxL){
             return FALSE;
@@ -42,7 +42,7 @@ class mainController
         return TRUE;
     }
     
-    protected function generateString($len=32) //генерируем случайную строку с заданной длиной
+    public function generateString($len=32) //генерируем случайную строку с заданной длиной
     {
         $str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPRQSTUVWXYZ0123456789';
         $str_len = strlen($str)-1;
@@ -53,7 +53,7 @@ class mainController
         return $text;
     }
     
-    protected function cryptPass($pass,$d_salt) //хешируем пароль
+    public function cryptPass($pass,$d_salt) //хешируем пароль
     {        
        return sha1(substr(md5($pass),0,20).$d_salt.substr(md5($pass),5,10).self::C_SALT);
     }

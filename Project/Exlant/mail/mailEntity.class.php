@@ -9,10 +9,22 @@ class mailEntity
     private $_mailCallBack = '';             // обратная почта  (string)
     private $_settingId = 'exlantSt';        // идентификатор параметров почты  (string)
     private $_config = array();              // массив с параметрами   (array)
+    private $_name = '';                     // Логин отправителя (string)
     
     public function __construct() 
     {
         
+    }
+    
+    public function setName($name)
+    {
+        $this->_name = $name;
+        return $this;
+    }
+    
+    public function getName()
+    {
+        return $this->_name;
     }
     
     public function setBody($body)
@@ -26,7 +38,10 @@ class mailEntity
     }
     public function getMergeBody()
     {
-        return $this->_body."\n\r\n\r"
+        return $this->_body
+            ."\n\r\n\r"
+            . 'Логин отправителя: '.$this->getName()
+            ."\n\r"
             . 'Обратная почта отправителя: '.$this->getMailCallBack();
     }
     

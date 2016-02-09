@@ -9,7 +9,7 @@ require_once '/var/www/tictactoe.pp.ua/public/Project/swiftmailer/lib/swift_requ
 
 class mail extends mailEntity
 {
-    public function __construct($body = null, $subject = null, $mailCallBack = null) 
+    public function __construct($name, $body = null, $subject = null, $mailCallBack = null) 
     {
         if($body){
             $this->setBody($body);
@@ -20,7 +20,8 @@ class mail extends mailEntity
         if($mailCallBack){
             $this->setMailCallBack($mailCallBack);
         }
-        $this->setConfig();
+        $this->setName($name)
+             ->setConfig();
         parent::__construct();
     }
     

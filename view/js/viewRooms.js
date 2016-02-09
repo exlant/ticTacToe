@@ -47,17 +47,20 @@ $(function () {
             cache: false,
             async: true,
             success: function (msg) {
+                console.log(msg);
                 if(stack.roomsHash !== msg.roomsHash){
                     stack.roomsHash = msg.roomsHash;
                     roomsContainer.html(msg.rooms);
                 }
+                
+                if(msg.status === "start"){
+                        window.document.location.reload();
+                }
+                
                 if(msg.addPlayers){
                     if(stack.addPlayersHash !== msg.addPlayersHash){
                         stack.addPlayersHash = msg.addPlayersHash;
                         playersContainer.html(msg.addPlayers);
-                    }
-                    if(msg.status === "starting"){
-                        window.document.location.reload();
                     }
                     
                     if(msg.readyTogo === "ok" && stack.roomTitle !== "ok"){

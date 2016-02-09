@@ -79,7 +79,7 @@ $.expr[':'].regex = function(elem, index, match) {
 
 })(jQuery);
 
-var DOMEN = "http://tictactoe.pp.ua";
+var DOMEN = "http://"+location.hostname+"/";
 var TICTACTOE =  "tictactoe";
 var AJAX = "";
 
