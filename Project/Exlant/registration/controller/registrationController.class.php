@@ -8,14 +8,16 @@ use Project\Exlant\registration\model\registrationModel;
 class registrationController extends mainController
 {
     public $quickMessage = null;
+    private $_type = null;
     //логин, пароль, почта
     public function __construct($login,
                                 $pass,
                                 $pass_test,
-                                $mail
+                                $mail,
+                                $type = null
                                 )
     {
-        
+        $this->_type = $type;
         //проверка логина
         if(!$this->checkLogin($login)){
             return FALSE;
@@ -44,11 +46,16 @@ class registrationController extends mainController
     
         
     public  function checkLogin($login) {
-        //переопределяем родительский метод
-        if(!parent::checkLogin($login)){ //если не проходит регулярку, кидаем ошибку
-            $this->setError('incorect_login');
-            return FALSE;
+        
+        
+        if($this->_type !== 'guest'){
+            //переопределяем родительский метод
+            if(!parent::checkLogin($login)){ //если не проходит регулярку, кидаем ошибку
+                $this->setError('incorect_login');
+                return FALSE;
+            }
         }
+        
         //подключаем об'ект модели 
         $instanceRegistModel = new registrationModel();
         $countLogin = $instanceRegistModel

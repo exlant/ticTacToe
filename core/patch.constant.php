@@ -9,5 +9,6 @@ define('VIEW','Project'.$slash.'Exlant'.$slash.'view'.$slash); //путь к vie
 define('TICTACTOE', 'tictactoe');        //route к модулю крестики нолики
 define('USERS', 'users');                //route к модулю пользователи
 define('SENDMESSAGE', 'sendMessage');    //route к модулю отправить сообщение
+define('GUIDE', 'guide');    //route к модулю отправить сообщение
 
 

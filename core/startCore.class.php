@@ -38,7 +38,8 @@ class startCore
             //выключаем вывод ошибок
             //ini_set('display_errors', 'off');
 	    error_reporting(E_ALL);
-            ini_set('display_errors', 'on');
+            ini_set('display_errors', 0);
+            ini_set('display_startup_errors', 0);
             ini_set('session.cookie_lifetime', 60*60*24);
             //устанавливаем обработчик ошибок
             set_error_handler(array($errorHandler, 'setError'));

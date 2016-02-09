@@ -32,6 +32,9 @@ use Project\Exlant\view\view;
             <div class="statistics">Побед: <?= (isset($userStat['win'])) ? $userStat['win'] : 0 ?></div>
             <div class="statistics">Поражений: <?= (isset($userStat['lose'])) ? $userStat['lose'] : 0 ?></div>
             <div class="statistics">Ничьих: <?= (isset($userStat['draw'])) ? $userStat['draw'] : 0 ?></div>
+            <div class="statistics">
+                <a href="<?=DOMEN.'/users/'.$user['nick']?>">Редактирование профиля</a>
+            </div>
             <div class="out">
                 <a href="<?=DOMEN ?>/out">Выйти</a>
             </div>
@@ -42,8 +45,12 @@ use Project\Exlant\view\view;
                 <a href="<?= DOMEN.'/'.TICTACTOE ?>">Крестики-нолики</a>
             </div>
             <div class="menuItem">
-                <a href="<?= DOMEN.'/' ?>sendMessage">Отправить сообщение</a>
+                <a href="<?= DOMEN.'/'.SENDMESSAGE ?>">Отправить сообщение</a>
             </div>
+            <div class="menuItem">
+                <a href="<?= DOMEN.'/'.GUIDE ?>">Руководство</a>
+            </div>
+            
         </div>
         <div class="usersOnline">
             <div class="title">Пользователи он-лайн</div>
@@ -61,6 +68,9 @@ use Project\Exlant\view\view;
             }
             if(startCore::$controller->getRoute() === SENDMESSAGE){
                 require_once VIEW.SENDMESSAGE.'.php';
+            }
+            if(startCore::$controller->getRoute() === GUIDE){
+                require_once VIEW.GUIDE.'.php';
             }
         ?>
     </div>

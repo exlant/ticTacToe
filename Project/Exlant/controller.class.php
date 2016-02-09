@@ -70,7 +70,7 @@ class controller extends model
                 return false;
             }
             $guestCounter = $this->getGuestCounter();
-            $registration = new registrationController('guest_'.$guestCounter,'guest1','guest1','empty@empty.com');
+            $registration = new registrationController('guest_'.$guestCounter,'guest1','guest1','empty@empty.com', 'guest');
             $this->quickMessage = $registration->quickMessage;
         }
     }
@@ -98,6 +98,10 @@ class controller extends model
         
         if($this->getRoute() === USERS){
             $this->setUsersObject($login);
+        }
+        
+        if($this->getRoute() === GUIDE){
+            startCore::setCSS('guide.css');
         }
         
         // запуск объекта с игрой крестики нолики
