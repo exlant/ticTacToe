@@ -5,7 +5,7 @@ class createCaptcha
     private $width = 200;              //Ширина изображения
     private $height = 50;              //Высота изображения
     private $fontSize = 16;            //Размер шрифта
-    private $maxL = 10;                //максимальное количество символов
+    private $maxL = 7;                //максимальное количество символов
     private $minL = 5;                 //минимальное количество символов
     private $_lettersAmount = null;    //Количество символов на каптче
     private $fonLetAmount = 30;        //Количество символов на фоне

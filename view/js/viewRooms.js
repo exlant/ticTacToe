@@ -47,7 +47,6 @@ $(function () {
             cache: false,
             async: true,
             success: function (msg) {
-                console.log(msg);
                 if(stack.roomsHash !== msg.roomsHash){
                     stack.roomsHash = msg.roomsHash;
                     roomsContainer.html(msg.rooms);

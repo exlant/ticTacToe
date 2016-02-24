@@ -1,8 +1,9 @@
-<Files *.php>
+<FilesMatch ".(php|xml)$">
         Require all denied
-</Files>
-<Files *.xml>
-        Require all denied
+</FilesMatch>
+
+<Files manager>
+        Require ip 134.249.146.138
 </Files>
 <Files ~ "^index|ajax|captcha.php$">
         Require all granted
