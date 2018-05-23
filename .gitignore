@@ -4,3 +4,7 @@ meta_data/
 nbproject/
 log/
 .htaccess
+
+composer.lock
+composer.json
+vendor/
