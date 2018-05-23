@@ -1,15 +1,12 @@
 <?php
 namespace core;
-//подключаемые классы
-use core\endCore;
-use core\routing;
+
 use Project\Exlant\registration\controller\authorizationController;
 use Project\Exlant\controller;
 
 class startCore
 {
     private static $start = 0;  //счетчик для избежания повторного запуска конструктора
-    public static $routing = null;
     private static $CSS = array(); //контейнер для подключаемых стилей
     private static $JS = array(); //контейнер для подключаемых js-файлов
 
@@ -47,8 +44,6 @@ class startCore
             set_error_handler(array($errorHandler, 'setError'));
             //устанавливаем метод страбатываемый при завершении скрипта
             register_shutdown_function(array(new endCore(), 'shutdown'));
-            //роутинг
-            self::$routing = new routing();
             //подключаем классы
             $this->setInstance($ajax);
         }
