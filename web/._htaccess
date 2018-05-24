@@ -1,0 +1,50 @@
+php_value display_errors 1
+php_value display_startup_errors 1
+php_value error_reporting E_ALL
+
+<FilesMatch ".(php|xml)$">
+        Require all denied
+</FilesMatch>
+
+<Files manager>
+        Require ip 134.249.146.138
+</Files>
+<Files ~ "^index|ajax|captcha.php$">
+        Require all granted
+</Files>
+
+
+AddDefaultCharset utf-8
+<IfModule dir_module>
+    DirectoryIndex index.php
+</IfModule>
+
+RewriteEngine On
+
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !favicon\.ico
+RewriteRule ^(tictactoe)/(.+?)/(.+?)/?$ ./index.php?route=$1&action=$2&property=$3
+
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !favicon\.ico
+RewriteRule ^(tictactoe)/(.+?)/?$ ./index.php?route=$1&action=$2
+
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !favicon\.ico
+RewriteRule ^(.+?)/(.+?)/(.+?)/?$ ./index.php?route=$1&action=$2&property=$3
+
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !favicon\.ico
+RewriteRule ^(.+?)/(.+?)/?$ ./index.php?route=$1&action=$2
+
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !favicon\.ico
+RewriteRule ^(.+?)/?$  ./index.php?route=$1
+
+
+
